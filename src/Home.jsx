@@ -24,8 +24,8 @@ const Home = ({ navigation }) => {
 
       <View style={styles.chartContainer}>
         <AnimatedCircularProgress
-          size={180}
-          width={20}
+          size={200}
+          width={25}
           fill={45}
           tintColor="#00e0ff"
           tintColorSecondary="#8e2de2"
@@ -43,13 +43,13 @@ const Home = ({ navigation }) => {
         </AnimatedCircularProgress>
       </View>
 
-      {/* <LinearGradient colors={['#00008b','#483d8b','#696969']}>  */}
-      <View style={styles.thought}>
+      <LinearGradient colors={['#8b008b', '#9932cc', '#ff00ff']} style ={styles.thought}>  
+      {/* <View style={styles.thought}> */}
         <Text style={styles.thoughttxt}>Tip of the day</Text>
 
         <Text style={styles.thoughtdata}>Prepare a Budget and Abide by it</Text>
-      </View>
-      {/* </LinearGradient> */}
+      {/* </View> */}
+      </LinearGradient>
       {/* Second header */}
 
       <View style={styles.secheader}>
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
 
   chartContainer: {
-    marginTop: 40,
+    marginTop: 20,
     alignItems: 'center',
   },
 
@@ -239,28 +239,36 @@ const styles = StyleSheet.create({
   },
 
   thought: {
-    marginLeft: '25',
-    marginTop: '15',
-    width: '85%',
-    height: '10%',
-    // backgroundColor: 'green',
-    // alignItems:'center'
-    paddingLeft: '14',
-    borderWidth: 1,
-    borderColor: '#8b008b',
-    borderRadius: 15,
-    gap: 30,
-  },
+  marginLeft: 25,
+  marginTop: 16,
+  width: '85%',
+  height: '10%',
+  paddingLeft: 14,
+  borderWidth: 1,
+  borderColor: '#8b008b',
+  borderRadius: 15,
+  gap: 1,
+  justifyContent: 'center',
+},
+
   thoughttxt: {
     fontSize: 14,
+    paddingBottom:20,
+    color: 'white',
   },
-  thoughtdata: {},
+  thoughtdata: {
+    fontSize:16,
+    marginBottom:17,
+    color:'white',
+    fontWeight:'bold'
+
+  },
 
   secheader: {},
   expense: {
     padding: 13,
     fontSize: 25,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
   },
 
   contain1: {

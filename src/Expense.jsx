@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     height: '15%',
     backgroundColor: '#9400d3',
     borderColor: '#9400d3',
-    borderRadius: 20,
+    borderRadius: 30,
   },
 
   textcontainer: {},
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
    contain1: {
-    paddingLeft: 30,
+    paddingLeft: 10,
     fontSize: 19,
     fontWeight: '500',
     color:'white',
@@ -232,9 +232,9 @@ const styles = StyleSheet.create({
   row: {
     borderWidth:1,
     borderColor:'#00bfff',
-    borderRadius:29,
-    padding:'20'
-,    gap:15,
+    borderRadius:40,
+    padding:'20',
+    gap:15,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#191970',
