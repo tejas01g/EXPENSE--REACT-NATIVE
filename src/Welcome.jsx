@@ -8,7 +8,7 @@ const Welcome = ({navigation}) => {
       <Text style= {styles.para}>Track your expense in a Smart Way</Text>
 
       <TouchableOpacity
-      onPress= {() => navigation.navigate('Home')}
+      onPress= {() => navigation.replace('Main')}
        style = {styles.btn}>
         <Text style ={styles.btnText}>Get Started</Text>
       </TouchableOpacity>
