@@ -1,10 +1,15 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
+import LinearGradient from 'react-native-linear-gradient';
 
 const Welcome = ({navigation}) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Welcome</Text>
+      <LinearGradient
+          colors={['#00008b', '#483d8b', '#9400d3']}
+          style={{ flex: 1 }}
+        >
+     <View style={styles.container}>
+      <Text style={styles.text}>Expensr</Text>
       <Text style= {styles.para}>Track your expense in a Smart Way</Text>
 
       <TouchableOpacity
@@ -14,6 +19,7 @@ const Welcome = ({navigation}) => {
       </TouchableOpacity>
 
     </View>
+    </LinearGradient>
   );
 };
 
@@ -27,7 +33,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
   },
   text: {
-    fontSize: 30,
+    fontSize: 35,
   },
 
   para:{

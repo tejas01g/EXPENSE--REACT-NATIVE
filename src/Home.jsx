@@ -36,7 +36,7 @@ const Home = ({ navigation }) => {
         >
           {() => (
             <View style={styles.innercontent}>
-              <Text style={styles.balance}>$11889</Text>
+              <Text style={styles.balance}>$1159</Text>
               <Text style={styles.label}>Available Balance</Text>
             </View>
           )}
