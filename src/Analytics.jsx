@@ -74,6 +74,32 @@ const Analytics = ({ navigation }) => {
         bezier
         style={styles.chartStyle}
       />
+      <View style = {styles.spending}>
+        <View style = {styles.spendcontainer}>
+          <Text style = {styles.spendtext}>Total Spending</Text>
+          <Text style={styles.spendamount}>$4,001.89</Text>
+        </View>
+
+         <View style= {styles.spendrow}>
+            {/* <Text style = {styles.spendtext}>Due Date 10th Oct</Text> */}
+          </View>
+      </View>
+
+      <View style = {styles.recentheader}>
+        <Text style = {styles.recenttext}>Recent Transaction</Text>
+      </View>
+
+      <View style= {styles.recentcontainer}>
+        <View style = {styles.row}>
+        <View style={styles.textcontain}>
+          <Text style={styles.text1}>Netflix</Text>
+          <Text style = {styles.texttime}>21 Sept - 13.01</Text>
+        {/* <View style = {styles.recentprice}> */}
+          <Text style ={styles.recentamount}>$20.00</Text>
+        </View>
+        </View>
+      </View>
+      {/* </View> */}
     </LinearGradient>
   );
 };
@@ -108,4 +134,99 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginHorizontal: 8,
   },
+
+  spending:{
+    margin:'10',
+    marginLeft:'30',
+    width: '85%',
+    height: '13%',
+    backgroundColor:'',
+    borderWidth:2,
+    borderColor:'black',
+    borderRadius:13,
+    
+  },
+
+  spendcontainer:{
+    padding:'25',
+    gap:10,
+    
+  },
+
+  spendtext:{
+    color:'white',
+    flexDirection:'row',
+    alignItems:'flex-end'
+
+  },
+  spendamount:{
+    color:'white',
+    fontSize:26,
+    fontWeight:'bold'
+  },
+  spendrow:{
+    flexDirection:'row',
+     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  recentheader:{
+    padding:13,
+    marginLeft:14
+  },
+  recenttext:{
+    fontSize:17,
+    fontWeight:'bold',
+    color:'grey'
+  },
+  recentcontainer:{
+    backgroundColor:'green',
+    borderRadius:25,
+    padding:12,
+    marginVertical:8,
+    width:'85%',
+    // height:'100%',
+    alignSelf:'center',
+  },
+  textcontain:{
+    flexDirection:'column',
+    justifyContent:'center',
+    flex:1,
+
+    // alignItems:'flex-start',
+    // padding:13,
+    // paddingTop:30,
+    // marginLeft:'20%',
+    // gap:1,
+    // backgroundColor:'green'
+  },
+  text1:{
+    fontSize:12,
+    fontWeight:'bold',
+    marginLeft:'18%'
+  },
+  texttime:{
+    fontSize:13,
+    marginLeft:'18%'
+  },
+  recentprice:{
+     flexDirection: 'row',
+    justifyContent: 'space-between',
+    // alignItems: 'center',
+    // padding: 25,
+    // paddingTop: 29,
+  },
+  recentamount:{
+    // flexDirection:'row',
+    fontSize: 16,
+  fontWeight: '600',
+  color: '#000',
+  marginTop: 4,
+  marginLeft:'80%',
+  // marginBottom:
+  },
+  row: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+},
 });

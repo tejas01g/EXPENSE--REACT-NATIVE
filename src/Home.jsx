@@ -1,196 +1,205 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import React from 'react';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
 
-
 const Home = ({ navigation }) => {
   return (
+    <LinearGradient
+      colors={['#00008b', '#483d8b', '#9400d3']}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.text}>Home</Text>
 
-    <LinearGradient colors={['#00008b', '#483d8b', '#9400d3']} style={{flex:1}}>
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.text}>Home</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <Image
+              source={{
+                uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+              style={styles.profileimage}
+            />
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image
-            source={{
-              uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-            style={styles.profileimage}
-          />
-        </TouchableOpacity>
-      </View>
+        <View style={styles.chartContainer}>
+          <AnimatedCircularProgress
+            size={200}
+            width={25}
+            fill={45}
+            tintColor="#00e0ff"
+            tintColorSecondary="#8e2de2"
+            backgroundColor="#2d2f4a"
+            arcSweepAngle={360}
+            rotation={135}
+            lineCap="round"
+          >
+            {() => (
+              <View style={styles.innercontent}>
+                <Text style={styles.balance}>$1159</Text>
+                <Text style={styles.label}>Available Balance</Text>
+              </View>
+            )}
+          </AnimatedCircularProgress>
+        </View>
 
-      <View style={styles.chartContainer}>
-        <AnimatedCircularProgress
-          size={200}
-          width={25}
-          fill={45}
-          tintColor="#00e0ff"
-          tintColorSecondary="#8e2de2"
-          backgroundColor="#2d2f4a"
-          arcSweepAngle={360}
-          rotation={135}
-          lineCap="round"
-        >
-          {() => (
-            <View style={styles.innercontent}>
-              <Text style={styles.balance}>$1159</Text>
-              <Text style={styles.label}>Available Balance</Text>
+        {/* <LinearGradient colors={['#8b008b', '#9932cc', '#ff00ff']} style ={styles.thought}>   */}
+        <View style={styles.thought}>
+          <Text style={styles.thoughttxt}>Tip of the day</Text>
+
+          <Text style={styles.thoughtdata}>
+            Prepare a Budget and Abide by it
+          </Text>
+        </View>
+        {/* </LinearGradient> */}
+        {/* Second header */}
+
+        <View style={styles.secheader}>
+          <Text style={styles.expense}>Expenses</Text>
+        </View>
+
+        <ScrollView style={styles.expenselist}>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
             </View>
-          )}
-        </AnimatedCircularProgress>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+          <View style={styles.row}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              }}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.contain1}>Nike Air Max 2090</Text>
+              <Text style={styles.time}>09 Oct 2023</Text>
+            </View>
+            <Text style={styles.price}>-$50</Text>
+          </View>
+        </ScrollView>
       </View>
-
-      <LinearGradient colors={['#8b008b', '#9932cc', '#ff00ff']} style ={styles.thought}>  
-      {/* <View style={styles.thought}> */}
-        <Text style={styles.thoughttxt}>Tip of the day</Text>
-
-        <Text style={styles.thoughtdata}>Prepare a Budget and Abide by it</Text>
-      {/* </View> */}
-      </LinearGradient>
-      {/* Second header */}
-
-      <View style={styles.secheader}>
-        <Text style={styles.expense}>Expenses</Text>
-      </View>
-
-      <ScrollView style={styles.expenselist}>
-        <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>
-         <View style={styles.row}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.contain1}>Nike Air Max 2090</Text>
-            <Text style={styles.time}>09 Oct 2023</Text>
-          </View>
-          <Text style={styles.price}>-$50</Text>
-        </View>       
-    </ScrollView>
-      </View>
-      </LinearGradient>
-      
+    </LinearGradient>
   );
 };
 
@@ -239,29 +248,29 @@ const styles = StyleSheet.create({
   },
 
   thought: {
-  marginLeft: 25,
-  marginTop: 16,
-  width: '85%',
-  height: '10%',
-  paddingLeft: 14,
-  borderWidth: 1,
-  borderColor: '#8b008b',
-  borderRadius: 15,
-  gap: 1,
-  justifyContent: 'center',
-},
+    backgroundColor: 'transparent',
+    marginLeft: 25,
+    marginTop: 16,
+    width: '85%',
+    height: '10%',
+    paddingLeft: 14,
+    borderWidth: 1,
+    borderColor: '#301a6dff',
+    borderRadius: 15,
+    gap: 1,
+    justifyContent: 'center',
+  },
 
   thoughttxt: {
     fontSize: 14,
-    paddingBottom:20,
+    paddingBottom: 20,
     color: 'white',
   },
   thoughtdata: {
-    fontSize:16,
-    marginBottom:17,
-    color:'white',
-    fontWeight:'bold'
-
+    fontSize: 16,
+    marginBottom: 17,
+    color: 'white',
+    fontWeight: 'bold',
   },
 
   secheader: {},
@@ -282,12 +291,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   row: {
-    gap:15,
+    gap: 15,
     flexDirection: 'row',
     alignItems: 'center',
     // backgroundColor: 'blue',
-    justifyContent:'space-between',
-    marginBottom:16
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
   logo: {
     width: 50,
@@ -301,15 +310,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   textContainer: {
-    flex:1,
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
   },
 
   price: {
-    fontSize:16,
-    fontWeight:600,
+    fontSize: 16,
+    fontWeight: 600,
     color: 'red',
-    marginLeft:10
+    marginLeft: 10,
   },
 });

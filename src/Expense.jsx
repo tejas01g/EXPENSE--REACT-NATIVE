@@ -265,4 +265,12 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft:10
   },
+  contain1: {
+    paddingLeft: 10,
+    fontSize: 19,
+    fontWeight: '500',
+    color:'white',
+    // width:'200%',
+    // height:'40'
+  },
 });
