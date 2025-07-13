@@ -12,10 +12,10 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const Home = ({ navigation }) => {
   return (
-    <LinearGradient
-      colors={['#00008b', '#483d8b', '#9400d3']}
-      style={{ flex: 1 }}
-    >
+    // <LinearGradient
+    //   colors={['#00008b', '#483d8b', '#9400d3']}
+    //   style={{ flex: 1 }}
+    // >
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.text}>Home</Text>
@@ -199,7 +199,7 @@ const Home = ({ navigation }) => {
           </View>
         </ScrollView>
       </View>
-    </LinearGradient>
+    // </LinearGradient>
   );
 };
 
@@ -209,9 +209,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
+    backgroundColor:'black'
   },
   text: {
     fontSize: 25,
+    color:'white'
   },
 
   header: {
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#4caf50',
+    borderColor: '#390cc1ff',
   },
 
   chartContainer: {
@@ -240,11 +242,11 @@ const styles = StyleSheet.create({
   balance: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: 'navyblue',
+    color: 'white',
   },
   label: {
     fontSize: 14,
-    color: 'black',
+    color: 'white',
   },
 
   thought: {
@@ -284,6 +286,7 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
     fontSize: 16,
     fontWeight: '500',
+    color:'white'
     // width:'200%',
     // height:'40'
   },
@@ -297,6 +300,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'blue',
     justifyContent: 'space-between',
     marginBottom: 16,
+    
   },
   logo: {
     width: 50,
@@ -308,11 +312,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 30,
     marginBottom: 10,
+    color:'white'
   },
   textContainer: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+    
   },
 
   price: {

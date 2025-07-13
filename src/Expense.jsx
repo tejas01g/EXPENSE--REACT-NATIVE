@@ -4,10 +4,10 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const Expense = ({navigation}) => {
   return (
-    <LinearGradient
-      colors={['#00008b', '#483d8b', '#9400d3']}
-      style={{ flex: 1 }}
-    >
+    // <LinearGradient
+    //   colors={['#00008b', '#483d8b', '#9400d3']}
+    //   style={{ flex: 1 }}
+    // >
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.text}>Expenses</Text>
@@ -162,7 +162,7 @@ const Expense = ({navigation}) => {
           </View>
         </ScrollView>
       </View>
-    </LinearGradient>
+    // </LinearGradient>
   );
 };
 
@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
+    backgroundColor:'black'
   },
   header: {
     flexDirection: 'row',
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#4caf50',
+    borderColor: '#200972ff',
   },
 
   balancebox: {
@@ -199,8 +200,8 @@ const styles = StyleSheet.create({
     margin: '25',
     width: '87%',
     height: '15%',
-    backgroundColor: '#9400d3',
-    borderColor: '#9400d3',
+    backgroundColor: '#595860ff',
+    borderColor: '#091e95ff',
     borderRadius: 30,
   },
 
@@ -230,14 +231,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   row: {
-    borderWidth:1,
-    borderColor:'#00bfff',
+    borderWidth:0.5,
+    borderColor:'blue',
     borderRadius:40,
     padding:'20',
     gap:15,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#191970',
+    backgroundColor: '#181819ff',
     justifyContent:'space-between',
     marginBottom:16
   },
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 30,
     marginBottom: 10,
-    color:'gray',
+    color:'white',
   },
   textContainer: {
     flex:1,

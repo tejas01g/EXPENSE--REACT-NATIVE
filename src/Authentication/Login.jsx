@@ -16,10 +16,15 @@ const Login = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Enter the Email"
+          placeholderTextColor="white"
           keyboardType="email"
         />
 
-        <TextInput style={styles.input} placeholder="Enter the password" />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter the password"
+          placeholderTextColor="white"
+        />
 
         <TouchableOpacity
           style={styles.button}
@@ -43,23 +48,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     // padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: 'black',
   },
   login: {
-    // color:'white',
     gap: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logintext: {
-    //  color:'white',
+    color: 'white',
     fontSize: 30,
     marginTop: '40%',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     gap: 10,
+    fontFamily:'Montserrat-Regular'
   },
   input: {
-    color:'black',
+    color: 'white',
     // color:'white',
     borderWidth: 1,
     borderColor: '#aaa',
@@ -77,5 +82,12 @@ const styles = StyleSheet.create({
     width: '20%',
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor: 'white',
+  },
+  loginbtn: {
+    color: 'white',
+  },
+  link: {
+    color: 'white',
   },
 });

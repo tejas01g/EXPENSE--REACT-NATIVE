@@ -5,10 +5,10 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const Add = ({ navigation }) => {
   return (
-    <LinearGradient
-      colors={['#00008b', '#483d8b', '#9400d3']}
-      style={{ flex: 1 }}
-    >
+    // <LinearGradient
+    //   colors={['#00008b', '#483d8b', '#9400d3']}
+    //   style={{ flex: 1 }}
+    // >
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headertext}>Add Expenses</Text>
@@ -57,7 +57,7 @@ const Add = ({ navigation }) => {
           </View>
         </View>
       </View>
-    </LinearGradient>
+    // </LinearGradient>
   );
 };
 
@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
+    backgroundColor:'black'
   },
   header: {
     flexDirection: 'row',
@@ -80,23 +81,23 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#4caf50',
+    borderColor: '#230771ff',
   },
   headertext: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: 'gray',
+    color: 'white',
   },
 
   transaction: {
     marginTop:'26',
     width: '85%',
     height: '12%',
-    backgroundColor: '#9a59d7ff',
+    backgroundColor: '#181819ff',
     margin: 10,
     marginLeft: '30',
-    borderWidth: 2,
-    borderColor: 'purple',
+    borderWidth: 0.5,
+    borderColor: 'blue',
     borderRadius: 30,
   },
 
@@ -119,11 +120,11 @@ const styles = StyleSheet.create({
    category: {
     width: '85%',
     height: '12%',
-    backgroundColor: '#9a59d7ff',
+    backgroundColor: '#181819ff',
     margin: 10,
     marginLeft: '30',
-    borderWidth: 2,
-    borderColor: 'purple',
+    borderWidth: 0.5,
+    borderColor: 'blue',
     borderRadius: 30,
   },
 
@@ -145,11 +146,11 @@ const styles = StyleSheet.create({
    amount: {
     width: '85%',
     height: '12%',
-    backgroundColor: '#9a59d7ff',
+    backgroundColor: '#181819ff',
     margin: 10,
     marginLeft: '30',
-    borderWidth: 2,
-    borderColor: 'purple',
+    borderWidth: 0.5,
+    borderColor: 'blue',
     borderRadius: 30,
   },
 
@@ -170,11 +171,11 @@ const styles = StyleSheet.create({
   currency: {
     width: '85%',
     height: '12%',
-    backgroundColor: '#9a59d7ff',
+    backgroundColor: '#181819ff',
     margin: 10,
     marginLeft: '30',
-    borderWidth: 2,
-    borderColor: 'purple',
+    borderWidth: 0.5,
+    borderColor: 'blue',
     borderRadius: 30,
   },
 
@@ -197,11 +198,11 @@ const styles = StyleSheet.create({
   payment: {
     width: '85%',
     height: '12%',
-    backgroundColor: '#9a59d7ff',
+    backgroundColor: '#181819ff',
     margin: 10,
     marginLeft: '30',
-    borderWidth: 2,
-    borderColor: 'purple',
+    borderWidth: 0.5,
+    borderColor: 'blue',
     borderRadius: 30,
   },
 
