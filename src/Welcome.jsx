@@ -13,7 +13,7 @@ const Welcome = ({navigation}) => {
       <Text style= {styles.para}>Track your expense in a Smart Way</Text>
 
       <TouchableOpacity
-      onPress= {() => navigation.replace('Main')}
+      onPress= {() => navigation.replace('Login')}
        style = {styles.btn}>
         <Text style ={styles.btnText}>Get Started</Text>
       </TouchableOpacity>
