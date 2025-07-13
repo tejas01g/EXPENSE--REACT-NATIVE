@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     marginTop: '40%',
     // fontWeight: 'bold',
     gap: 10,
-    fontFamily:'Montserrat-Regular'
+    fontFamily:'Montserrat-SemiBold'
   },
   input: {
     color: 'white',
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     width: '80%',
+    fontFamily:'Montserrat-Regular'
   },
   button: {
     // color:'white',
@@ -86,8 +87,10 @@ const styles = StyleSheet.create({
   },
   loginbtn: {
     color: 'white',
+    fontFamily:'Montserrat-Regular'
   },
   link: {
     color: 'white',
+    fontFamily:'Montserrat-Regular'
   },
 });

@@ -85,8 +85,9 @@ const styles = StyleSheet.create({
   },
   headertext: {
     fontSize: 25,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     color: 'white',
+    fontFamily: 'Montserrat-SemiBold',
   },
 
   transaction: {
@@ -99,6 +100,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: 'blue',
     borderRadius: 30,
+    // fontFamily: 'Montserrat-Regular',
+    
   },
 
   transcontainer: {
@@ -108,13 +111,14 @@ const styles = StyleSheet.create({
 
   transtext: {
     color:'white',
-    
+    fontFamily: 'Montserrat-Regular',
   },
 
   transtime:{
     color:'white',
-    fontWeight:'bold',
+    // fontWeight:'bold',
     fontSize:16,
+    fontFamily: 'Montserrat-SemiBold',
   },
 
    category: {
@@ -135,11 +139,13 @@ const styles = StyleSheet.create({
 
   cattext: {
     color:'white',
+    fontFamily: 'Montserrat-Regular',
   },
 
   catitem:{
     color:'white',
-    fontWeight:'bold',
+    // fontWeight:'bold',
+    fontFamily: 'Montserrat-SemiBold',
     fontSize:16,
   },
 
@@ -161,10 +167,12 @@ const styles = StyleSheet.create({
 
   amounttext: {
     color:'white',
+    fontFamily: 'Montserrat-Regular',
   },
   amountitem:{
     color:'white',
-    fontWeight:'bold',
+    // fontWeight:'bold',
+    fontFamily: 'Montserrat-SemiBold',
     fontSize:16,
   },
 
@@ -186,12 +194,14 @@ const styles = StyleSheet.create({
 
   currencytext: {
     color:'white',
+    fontFamily: 'Montserrat-Regular',
     
   },
 
   currencyitem:{
     color:'white',
-    fontWeight:'bold',
+    // fontWeight:'bold',
+    fontFamily: 'Montserrat-SemiBold',
     fontSize:16,
   },
 
@@ -213,10 +223,13 @@ const styles = StyleSheet.create({
 
   paymenttext: {
     color:'white',
+    fontFamily: 'Montserrat-Regular',
+    // fontFamily: 'Montserrat-SemiBold',
   },
   paymentitem:{
     color:'white',
-    fontWeight:'bold',
+    // fontWeight:'bold',
     fontSize:16,
+    fontFamily: 'Montserrat-SemiBold',
   }
 });

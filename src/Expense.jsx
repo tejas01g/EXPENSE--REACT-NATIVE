@@ -184,7 +184,8 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 28,
     color: 'gray',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    fontFamily: 'Montserrat-SemiBold',
   },
 
   profileimage: {
@@ -212,18 +213,22 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     color: 'white',
     fontSize: 16,
+    fontFamily: 'Montserrat-Regular',
   },
   money: {
     fontSize: 50,
     color: 'white',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     marginLeft: 10,
+    fontFamily: 'Montserrat-SemiBold',
   },
    contain1: {
     paddingLeft: 10,
     fontSize: 19,
-    fontWeight: '500',
+    // fontWeight: '500',
+    fontFamily: 'Montserrat-Regular',
     color:'white',
+    
     // width:'200%',
     // height:'40'
   },
@@ -249,10 +254,11 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 12,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     paddingLeft: 30,
     marginBottom: 10,
     color:'white',
+    fontFamily: 'Montserrat-SemiBold',
   },
   textContainer: {
     flex:1,
@@ -262,15 +268,17 @@ const styles = StyleSheet.create({
 
   price: {
     fontSize:16,
-    fontWeight:600,
+    // fontWeight:600,
     color: 'red',
-    marginLeft:10
+    marginLeft:10,
+    fontFamily: 'Montserrat-SemiBold',
   },
   contain1: {
     paddingLeft: 10,
     fontSize: 19,
-    fontWeight: '500',
+    // fontWeight: '500',
     color:'white',
+    fontFamily: 'Montserrat-Regular',
     // width:'200%',
     // height:'40'
   },

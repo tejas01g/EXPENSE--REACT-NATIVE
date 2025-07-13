@@ -17,7 +17,7 @@ const BottomTabs = () => {
       tabBar={(props) => <CustomTabBar {...props} />} // ✅ use custom tab bar
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#4caf50',
+        tabBarActiveTintColor: '#130685ff',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle:{
           backgroundColor:'transparent',
@@ -33,7 +33,7 @@ const BottomTabs = () => {
           else if (route.name === 'Analytics') iconName = 'bar-chart-outline';
           else if (route.name === 'Profile') iconName = 'person-outline';
 
-          return <Ionicons name={iconName} size={22} color={color} />;
+          return <Ionicons name={iconName} size={28} color={color} />;
         },
       })}
     >

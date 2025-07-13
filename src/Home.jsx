@@ -213,7 +213,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 25,
-    color:'white'
+    color:'white',
+    fontFamily:'Montserrat-SemiBold'
   },
 
   header: {
@@ -241,12 +242,14 @@ const styles = StyleSheet.create({
   },
   balance: {
     fontSize: 22,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    fontFamily: 'Montserrat-SemiBold',
     color: 'white',
   },
   label: {
     fontSize: 14,
     color: 'white',
+    fontFamily: 'Montserrat-Regular',
   },
 
   thought: {
@@ -267,12 +270,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingBottom: 20,
     color: 'white',
+    fontFamily: 'Montserrat-Regular',
   },
   thoughtdata: {
     fontSize: 16,
     marginBottom: 17,
     color: 'white',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    fontFamily: 'Montserrat-SemiBold',
   },
 
   secheader: {},
@@ -286,7 +291,8 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
     fontSize: 16,
     fontWeight: '500',
-    color:'white'
+    color:'white',
+    fontFamily: 'Montserrat-Regular',
     // width:'200%',
     // height:'40'
   },
@@ -309,10 +315,11 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 10,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     paddingLeft: 30,
     marginBottom: 10,
-    color:'white'
+    color:'white',
+    fontFamily: 'Montserrat-SemiBold',
   },
   textContainer: {
     flex: 1,
@@ -326,5 +333,6 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     color: 'red',
     marginLeft: 10,
+    fontFamily: 'Montserrat-SemiBold',
   },
 });

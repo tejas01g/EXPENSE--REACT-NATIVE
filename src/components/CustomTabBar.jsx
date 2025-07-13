@@ -6,10 +6,11 @@ import LinearGradient from 'react-native-linear-gradient';
 const CustomTabBar = (props) => {
   return (
     <View style={styles.wrapper}>
-      <LinearGradient
+      {/* <LinearGradient
         colors={['#00008b', '#483d8b', '#9400d3']}
         style={StyleSheet.absoluteFill} // Makes the gradient fill entire wrapper
-      />
+      /> */}
+      
       <BottomTabBar {...props} />
     </View>
   );
@@ -21,6 +22,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     overflow: 'hidden', // important for Android
+    backgroundColor:'black'
   },
 });
 

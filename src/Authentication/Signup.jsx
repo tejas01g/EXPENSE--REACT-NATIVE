@@ -9,15 +9,18 @@ const Signup = () => {
       <TextInput 
       style = {styles.input}
       placeholder='Enter your name'
+      placeholderTextColor='white'
       
       />     
       <TextInput
       style = {styles.input}
       placeholder='Enter your email'
+      placeholderTextColor='white'
       />       
       <TextInput
       style = {styles.input}
       placeholder='Enter your password'
+      placeholderTextColor='white'
       />      
 
       <TouchableOpacity style={styles.button}>
@@ -36,7 +39,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     alignItems: 'center',
-    gap:11
+    gap:11,
+    backgroundColor:'black'
   },
 
   header: {
@@ -44,13 +48,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     fontSize:30,
+    color:'white',
+        fontFamily:'Montserrat-SemiBold'
+
   },
 
   input:{
     borderWidth:1,
     width:'80%',
     borderRadius:10,
-    color:'white'
+    color:'white',
+    borderColor:'#fff',
+     fontFamily:'Montserrat-Regular'
   },
 
   button:{
@@ -59,6 +68,11 @@ const styles = StyleSheet.create({
     padding:5,
     justifyContent:'center',
     alignItems:'center',
-    borderRadius:15
+    borderRadius:15,
+    borderColor:'white'
+  },
+  signupbtn:{
+    color:'white',
+     fontFamily:'Montserrat-Regular'
   }
 });
