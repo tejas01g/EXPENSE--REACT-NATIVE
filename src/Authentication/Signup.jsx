@@ -1,31 +1,86 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig'; // Adjust the path
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
+  const [name, setName] = useState('');
+  const [dob, setDob] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignup = async () => {
+    if (!email || !password || !name || !dob) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        name,
+        dob,
+        email
+      });
+
+      Alert.alert('Success', 'Account created successfully');
+      navigation.navigate('Profile'); // Or wherever you want to go
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Signup Error', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>SignUp</Text>
 
-      <TextInput 
-      style = {styles.input}
-      placeholder='Enter your name'
-      placeholderTextColor='white'
-      
-      />     
       <TextInput
-      style = {styles.input}
-      placeholder='Enter your email'
-      placeholderTextColor='white'
-      />       
+        style={styles.input}
+        placeholder="Enter your name"
+        placeholderTextColor="white"
+        value={name}
+        onChangeText={setName}
+      />
       <TextInput
-      style = {styles.input}
-      placeholder='Enter your password'
-      placeholderTextColor='white'
-      />      
+        style={styles.input}
+        placeholder="Enter your date of birth (DD/MM/YYYY)"
+        placeholderTextColor="white"
+        value={dob}
+        onChangeText={setDob}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your email"
+        placeholderTextColor="white"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your password"
+        placeholderTextColor="white"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
 
-      <TouchableOpacity style={styles.button}>
-        <Text style= {styles.signupbtn}>Signup</Text>
-     </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={handleSignup}>
+        <Text style={styles.signupbtn}>Signup</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -34,45 +89,38 @@ export default Signup;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
     flex: 1,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    gap:11,
-    backgroundColor:'black'
-  },
-
-  header: {
-    paddingBottom:30,
+    backgroundColor: '#121212',
+    padding: 20,
     justifyContent: 'center',
+  },
+  header: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
+    alignSelf: 'center',
+    marginBottom: 40,
+  },
+  input: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    color: 'white',
+    fontSize: 16,
+    borderColor: '#333',
+    borderWidth: 1,
+  },
+  button: {
+    backgroundColor: '#00c853',
+    paddingVertical: 15,
+    borderRadius: 10,
     alignItems: 'center',
-    fontSize:30,
-    color:'white',
-        fontFamily:'Montserrat-SemiBold'
-
+    marginTop: 10,
   },
-
-  input:{
-    borderWidth:1,
-    width:'80%',
-    borderRadius:10,
-    color:'white',
-    borderColor:'#fff',
-     fontFamily:'Montserrat-Regular'
+  signupbtn: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-
-  button:{
-    borderWidth:1,
-    width:'20%',
-    padding:5,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:15,
-    borderColor:'white'
-  },
-  signupbtn:{
-    color:'white',
-     fontFamily:'Montserrat-Regular'
-  }
 });

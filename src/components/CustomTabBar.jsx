@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     overflow: 'hidden', // important for Android
-    backgroundColor:'black'
+    backgroundColor:'black',
+    
   },
 });
 

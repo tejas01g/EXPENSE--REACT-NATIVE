@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ScrollView } from 'react-native';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { LineChart } from 'react-native-chart-kit';
@@ -24,7 +24,8 @@ const actualPlusPredicted = [...historicalData, ...predictedData];
 
 const Analytics = ({ navigation }) => {
   return (
-    <LinearGradient colors={['#00008b', '#483d8b', '#9400d3']} style={styles.container}>
+    // <LinearGradient colors={['#00008b', '#483d8b', '#9400d3']}
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.text}>Statistics</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -88,19 +89,51 @@ const Analytics = ({ navigation }) => {
       <View style = {styles.recentheader}>
         <Text style = {styles.recenttext}>Recent Transaction</Text>
       </View>
+      <ScrollView>
+      <View style={styles.row}>
+                  <Image
+                    style={styles.logo}
+                    source={{
+                      uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    }}
+                  />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contain1}>Nike Air Max 2090</Text>
+                    <Text style={styles.time}>09 Oct 2023</Text>
+                  </View>
+                  <Text style={styles.price}>-$50</Text>
+                </View>
 
-      <View style= {styles.recentcontainer}>
-        <View style = {styles.row}>
-        <View style={styles.textcontain}>
-          <Text style={styles.text1}>Netflix</Text>
-          <Text style = {styles.texttime}>21 Sept - 13.01</Text>
-        {/* <View style = {styles.recentprice}> */}
-          <Text style ={styles.recentamount}>$20.00</Text>
-        </View>
-        </View>
+                 <View style={styles.row}>
+                  <Image
+                    style={styles.logo}
+                    source={{
+                      uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    }}
+                  />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contain1}>Nike Air Max 2090</Text>
+                    <Text style={styles.time}>09 Oct 2023</Text>
+                  </View>
+                  <Text style={styles.price}>-$50</Text>
+                </View>
+
+                 <View style={styles.row}>
+                  <Image
+                    style={styles.logo}
+                    source={{
+                      uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    }}
+                  />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.contain1}>Nike Air Max 2090</Text>
+                    <Text style={styles.time}>09 Oct 2023</Text>
+                  </View>
+                  <Text style={styles.price}>-$50</Text>
+                </View>
+                </ScrollView>
+      
       </View>
-      {/* </View> */}
-    </LinearGradient>
   );
 };
 
@@ -109,6 +142,7 @@ export default Analytics;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:'black'
   },
   header: {
     flexDirection: 'row',
@@ -122,12 +156,13 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#4caf50',
+    borderColor: '#131dd6ff',
   },
   text: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: 'gray',
+    // fontWeight: 'bold',
+    fontFamily: 'Montserrat-SemiBold',
+    color: 'white',
   },
   chartStyle: {
     marginVertical: 8,
@@ -142,7 +177,7 @@ const styles = StyleSheet.create({
     height: '13%',
     backgroundColor:'',
     borderWidth:2,
-    borderColor:'black',
+    borderColor:'blue',
     borderRadius:13,
     
   },
@@ -156,13 +191,15 @@ const styles = StyleSheet.create({
   spendtext:{
     color:'white',
     flexDirection:'row',
-    alignItems:'flex-end'
+    alignItems:'flex-end',
+    fontFamily: 'Montserrat-Regular',
 
   },
   spendamount:{
     color:'white',
     fontSize:26,
-    fontWeight:'bold'
+    // fontWeight:'bold'
+    fontFamily: 'Montserrat-SemiBold',
   },
   spendrow:{
     flexDirection:'row',
@@ -175,8 +212,9 @@ const styles = StyleSheet.create({
   },
   recenttext:{
     fontSize:17,
-    fontWeight:'bold',
-    color:'grey'
+    // fontWeight:'bold',
+    fontFamily: 'Montserrat-SemiBold',
+    color:'white',
   },
   recentcontainer:{
     backgroundColor:'green',
@@ -224,9 +262,57 @@ const styles = StyleSheet.create({
   marginLeft:'80%',
   // marginBottom:
   },
-  row: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-},
+//   row: {
+//   flexDirection: 'row',
+//   alignItems: 'center',
+//   justifyContent: 'space-between',
+// },
+
+row: {
+    borderWidth:0.5,
+    borderColor:'blue',
+    borderRadius:40,
+    padding:'20',
+    gap:15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#181819ff',
+    justifyContent:'space-between',
+    marginBottom:16
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+  },
+  time: {
+    fontSize: 12,
+    // fontWeight: 'bold',
+    paddingLeft: 30,
+    marginBottom: 10,
+    color:'white',
+    fontFamily: 'Montserrat-SemiBold',
+  },
+  textContainer: {
+    flex:1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+
+  price: {
+    fontSize:16,
+    // fontWeight:600,
+    color: 'red',
+    marginLeft:10,
+    fontFamily: 'Montserrat-SemiBold',
+  },
+  contain1: {
+    paddingLeft: 10,
+    fontSize: 19,
+    // fontWeight: '500',
+    color:'white',
+    fontFamily: 'Montserrat-Regular',
+    // width:'200%',
+    // height:'40'
+  },
 });
