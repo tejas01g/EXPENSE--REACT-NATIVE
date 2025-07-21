@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
@@ -28,6 +29,7 @@ const Add = ({ navigation }) => {
       </View>
 
       {/* Transaction Time Section */}
+      {/* <ScrollView> */}
       <View style={styles.sectionBox}>
         <View style={styles.sectionContent}>
           <Text style={styles.label}>TRANSACTION</Text>
@@ -91,7 +93,12 @@ const Add = ({ navigation }) => {
           <Text style={styles.value}>Physical Cash</Text>
         </View>
       </View>
+      
+      <TouchableOpacity style = {styles.button}>
+        <Text style = {styles.btntext}>ADD</Text>
+      </TouchableOpacity>
     </View>
+    
   );
 };
 
@@ -149,4 +156,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Montserrat-SemiBold',
   },
+  btntext:{
+    
+    color:'white',
+    padding:10
+  },
+  button:{
+    marginTop:44,
+    justifyContent:'center',
+    alignItems:'center',
+    width:'25%',
+    borderWidth: 1,
+    borderColor:'white',
+    borderRadius:10,
+  }
 });
