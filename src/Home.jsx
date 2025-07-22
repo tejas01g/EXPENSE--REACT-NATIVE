@@ -240,13 +240,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Montserrat-SemiBold',
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 25,
-    paddingTop: 29,
+    padding: '4%',
+    paddingTop: '15%',
   },
   profileimage: {
     width: 50,
@@ -257,10 +256,9 @@ const styles = StyleSheet.create({
   },
 
   chartContainer: {
-    marginTop: 20,
+    marginTop: '4%',
     alignItems: 'center',
   },
-
   innercontent: {
     alignItems: 'center',
   },
@@ -278,41 +276,45 @@ const styles = StyleSheet.create({
 
   thought: {
     backgroundColor: 'transparent',
-    marginLeft: 25,
-    marginTop: 16,
+    marginLeft: '8%',
+    marginTop: '9%',
     width: '85%',
     height: '10%',
-    paddingLeft: 14,
+    paddingLeft: '5%',
     borderWidth: 1,
     borderColor: '#301a6dff',
     borderRadius: 15,
-    gap: 1,
+    gap: '2%',
     justifyContent: 'center',
   },
 
   thoughttxt: {
     fontSize: 14,
-    paddingBottom: 20,
+    paddingBottom: '5%',
     color: 'white',
     fontFamily: 'Montserrat-Regular',
   },
   thoughtdata: {
     fontSize: 16,
-    marginBottom: 17,
+    marginBottom: '8%',
     color: 'white',
     // fontWeight: 'bold',
     fontFamily: 'Montserrat-SemiBold',
   },
 
   secheader: {},
+
   expense: {
-    padding: 13,
+    paddingTop:'9%',
+    padding: '6%',
     fontSize: 25,
+    color:'white',
+    fontFamily: 'Montserrat-SemiBold',
     // fontWeight: 'bold',
   },
 
   contain1: {
-    paddingLeft: 30,
+    paddingLeft: '8%',
     fontSize: 16,
     fontWeight: '500',
     color: 'white',
@@ -324,12 +326,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   row: {
-    gap: 15,
+    gap: '5%',
     flexDirection: 'row',
     alignItems: 'center',
     // backgroundColor: 'blue',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: '5%',
   },
   logo: {
     width: 50,
@@ -339,8 +341,8 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 10,
     // fontWeight: 'bold',
-    paddingLeft: 30,
-    marginBottom: 10,
+    paddingLeft: '11%',
+    marginBottom: '5%',
     color: 'white',
     fontFamily: 'Montserrat-SemiBold',
   },
@@ -352,9 +354,9 @@ const styles = StyleSheet.create({
 
   price: {
     fontSize: 16,
-    fontWeight: 600,
+    // fontWeight: 600,
     color: 'red',
-    marginLeft: 10,
+    marginLeft: '5%',
     fontFamily: 'Montserrat-SemiBold',
   },
 });
