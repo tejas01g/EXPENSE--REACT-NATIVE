@@ -12,8 +12,7 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
-// import { db } from '../firebaseConfig';
-import { db } from '../src/firebaseConfig'
+import { auth, db } from '../src/firebaseConfig';
 
 const Add = ({ navigation }) => {
   const [currency, setCurrency] = useState('');
@@ -30,6 +29,12 @@ const Add = ({ navigation }) => {
       return;
     }
 
+    const userId = auth.currentUser?.uid;
+    if(!userId){
+      Alert.alert('User not logged in.');
+      return;
+    }
+
     const newExpense = {
       category,
       amount : parseFloat(amount),
@@ -39,7 +44,7 @@ const Add = ({ navigation }) => {
       createdAt: Timestamp.now(),
     };
     try{
-      await addDoc(collection(db, 'transactions'), newExpense);
+      await addDoc(collection(db,'users', userId, 'transactions'), newExpense);
       Alert.alert('Expense added!');
       setAmount('');
       setCategory('');
