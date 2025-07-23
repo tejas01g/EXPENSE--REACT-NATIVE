@@ -4,232 +4,188 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  TextInput,
+  ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { useState, useEffect } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { auth, db } from '../src/firebaseConfig';
+import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Profile = ({ navigation }) => {
-  const [dob, setdob] = useState(new Date(2000, 0, 1));
-  const [showPicker, setShowPicker] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
-  const handleChange = (event, selectedDate) => {
-    setShowPicker(false);
-    if (selectedDate) {
-      setdob(selectedDate);
+  // 🔐 Handle Logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.replace('Login'); // Make sure 'Login' exists in your navigator
+    } catch (error) {
+      console.log('Logout error:', error);
     }
   };
 
-  const [imageUri, setImageUri] = useState(null);
+  // 🔄 Fetch User Info
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const docRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setUserInfo(docSnap.data());
+        } else {
+          console.log('No user data found!');
+        }
+      }
+    };
 
+    fetchUserData();
+  }, []);
+
+  // 📸 Open Gallery
   const openGallery = () => {
     launchImageLibrary(
-      {
-        mediaType: 'photo',
-        quality: 1,
-      },
+      { mediaType: 'photo', quality: 1 },
       response => {
         if (!response.didCancel && !response.errorCode) {
           const uri = response.assets[0].uri;
           setImageUri(uri);
         }
-      },
+      }
     );
   };
+
   return (
-    // <LinearGradient
-    //   colors={['#00008b', '#483d8b', '#9400d3']}
-    //   style={{ flex: 1 }}
-    // >
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
       <Text style={styles.header}>Profile</Text>
 
-      <View style={styles.contain}>
-        <View style={styles.profile}>
-          <TouchableOpacity onPress={openGallery} style={styles.circle}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.image} />
-            ) : (
-              <Image
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                }}
-                style={styles.image}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
+      <View style={styles.centerContent}>
+        <TouchableOpacity onPress={openGallery} style={styles.circle}>
+          <Image
+            source={{
+              uri: imageUri
+                ? imageUri
+                : 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80',
+            }}
+            style={styles.image}
+          />
+        </TouchableOpacity>
 
-        <View style={styles.inputcontainer}>
-          <TextInput placeholder="Name" style={styles.input} backgroundColor ="black" placeholderTextColor='white'></TextInput>
-          <TextInput placeholder="Email" style={styles.input} backgroundColor ="black" placeholderTextColor='white'></TextInput>
-
-          <TouchableOpacity
-            onPress={() => setShowPicker(!showPicker)}
-            style={styles.input}
-            // backgroundColor ="black"
-          >
-            <Text style={{ color: dob ? 'black' : '#999' }}>
-              {dob ? dob.toDateString() : 'Select Date of Birth'}
-            </Text>
-          </TouchableOpacity>
-
-          {showPicker && (
-            <View style={styles.inlinePicker}>
-              <DateTimePicker
-                value={dob}
-                mode="date"
-                display="calendar" // shows small calendar style
-                maximumDate={new Date()}
-                onChange={(event, selectedDate) => {
-                  setShowPicker(false); // hide after selection (optional)
-                  if (selectedDate) {
-                    setdob(selectedDate);
-                  }
-                }}
-              />
-            </View>
+        <View style={styles.infoContainer}>
+          {userInfo ? (
+            <>
+              <Text style={styles.infoText}>👤 Name: {userInfo.name}</Text>
+              <Text style={styles.infoText}>📧 Email: {userInfo.email}</Text>
+              <Text style={styles.infoText}>🎂 DOB: {userInfo.dob}</Text>
+            </>
+          ) : (
+            <Text style={styles.loadingText}>Loading profile...</Text>
           )}
         </View>
-      </View>
 
-      <View style={styles.button}>
-        <TouchableOpacity styles={styles.edit}>
-          <Text style={styles.editbtn}>Edit</Text>
+        <TouchableOpacity style={styles.editButton}>
+          <Text style={styles.editText}>Edit</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.secheader}>
-        <Text style={styles.text}>Contact us</Text>
-        <Text style={styles.text}>About us</Text>
-        <Text style={styles.text}>About us</Text>
-        <Text style={styles.text}>Report or Problem</Text>
+      <View style={styles.linksContainer}>
+        <Text style={styles.link}>Contact Us</Text>
+        <Text style={styles.link}>About Us</Text>
+        <Text style={styles.link}>Report a Problem</Text>
       </View>
-      <View style={styles.logout}>
-        <TouchableOpacity style={styles.logouttbtn}>
-          <Text style={styles.logouttext}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
 
-    // {/* </View> */}
-    // </LinearGradient>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Logout</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 export default Profile;
 
+
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: 'black',
-    width: '100%',
-    height: '100%',
-    // alignItems: 'center',
-    // flexDirection:'row',
-    gap: 40,
+    paddingHorizontal: 20,
   },
   header: {
-    fontSize: 30,
+    fontSize: 28,
     color: 'white',
-    padding: 30,
-    marginTop: 20,
-    // flex:1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    marginRight: '60%',
+    marginTop: 40,
+    marginBottom: 20,
+    fontWeight: '600',
   },
-  contain: {
-    justifyContent: 'center',
+  centerContent: {
     alignItems: 'center',
-    gap: '20',
   },
   circle: {
     borderColor: 'blue',
     borderWidth: 2,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
     backgroundColor: '#ddd',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+    marginBottom: 20,
   },
   image: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
-  input: {
-    paddingTop: 10,
-    borderWidth: 1,
+  infoContainer: {
+    width: '100%',
+    gap: 12,
+    marginBottom: 20,
   },
-  inputcontainer: {
-    gap: 20,
-    width: '70%',
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  dobText: {
-    marginTop: 12,
+  infoText: {
+    color: 'white',
     fontSize: 16,
-    // color: '#333',
+    lineHeight: 24,
   },
-  inlinePicker: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 5,
-    marginTop: -10,
+  loadingText: {
+    color: 'gray',
+    fontSize: 16,
   },
-  input: {
+  editButton: {
+    borderColor: 'white',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  editText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  linksContainer: {
+    marginTop: 40,
+    gap: 12,
+  },
+  link: {
+    color: 'white',
+    fontSize: 16,
+    paddingVertical: 5,
+  },
+  logoutButton: {
+    marginTop: 30,
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
     borderRadius: 8,
-    padding: 12,
-    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
   },
-  button: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  edit: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editbtn: {
+  logoutText: {
     color: 'white',
-    padding: 7,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: 'white',
-    width: 80,
-    fontSize: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  secheader: {
-    padding: 10,
-    gap: 8,
-  },
-  text: {
-    fontSize: 16,
-    color: 'white',
-  },
-
-  logouttbtn: {
-    borderWidth: 1,
-    width: 80,
-    borderColor: 'white',
-    borderRadius: 6,
-  },
-  logouttext: {
-    fontSize: 19,
-    color: 'white',
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    fontSize: 18,
   },
 });
