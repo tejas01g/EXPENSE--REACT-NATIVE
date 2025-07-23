@@ -23,38 +23,37 @@ const Add = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const handleAddExpense = async() => {
-    if(!category || !amount || !currency || !payment){
-      Alert.alert("Please fill all fields");
+  const handleAddExpense = async () => {
+    if (!category || !amount || !currency || !payment) {
+      Alert.alert('Please fill all fields');
       return;
     }
 
     const userId = auth.currentUser?.uid;
-    if(!userId){
+    if (!userId) {
       Alert.alert('User not logged in.');
       return;
     }
 
     const newExpense = {
       category,
-      amount : parseFloat(amount),
+      amount: parseFloat(amount),
       currency,
       payment,
-      date : Timestamp.fromDate(date),
+      date: Timestamp.fromDate(date),
       createdAt: Timestamp.now(),
     };
-    try{
-      await addDoc(collection(db,'users', userId, 'transactions'), newExpense);
+    try {
+      await addDoc(collection(db, 'users', userId, 'transactions'), newExpense);
       Alert.alert('Expense added!');
       setAmount('');
       setCategory('');
       setCurrency('');
       setPayment('');
       // navigation.goBack();
-    }
-    catch(error){
+    } catch (error) {
       console.error('Error adding expense:', error.message);
-      Alert.alert('Failed to add expense. Try again.', error.message)
+      Alert.alert('Failed to add expense. Try again.', error.message);
     }
   };
 
@@ -74,130 +73,135 @@ const Add = ({ navigation }) => {
       </View>
 
       {/* Scrollable Form */}
-      <ScrollView style ={{height: '85%'}}
-       contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ height: '85%' }}
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Date and Time */}
-        <View style = {styles.wrapper}>
-        <View style={styles.sectionBox}>
-          <View style={styles.sectionContent}>
-            <Text style={styles.label}>TRANSACTION</Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={styles.value}>{date.toDateString()}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)}>
-              <Text style={styles.value}>
-                {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </Text>
-            </TouchableOpacity>
+        <View style={styles.wrapper}>
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionContent}>
+              <Text style={styles.label}>TRANSACTION</Text>
+              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                <Text style={styles.value}>{date.toDateString()}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowTimePicker(true)}>
+                <Text style={styles.value}>
+                  {date.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Text>
+              </TouchableOpacity>
 
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  if (selectedDate) {
-                    const updatedDate = new Date(selectedDate);
-                    updatedDate.setHours(date.getHours(), date.getMinutes());
-                    setDate(updatedDate);
-                  }
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      const updatedDate = new Date(selectedDate);
+                      updatedDate.setHours(date.getHours(), date.getMinutes());
+                      setDate(updatedDate);
+                    }
+                  }}
+                />
+              )}
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    setShowTimePicker(false);
+                    if (selectedTime) {
+                      const updatedDate = new Date(date);
+                      updatedDate.setHours(selectedTime.getHours());
+                      updatedDate.setMinutes(selectedTime.getMinutes());
+                      setDate(updatedDate);
+                    }
+                  }}
+                />
+              )}
+            </View>
+          </View>
+
+          {/* Category */}
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionContent}>
+              <Text style={styles.label}>CATEGORY</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Electronics"
+                placeholderTextColor="white"
+                value={category}
+                onChangeText={setCategory}
+              />
+            </View>
+          </View>
+
+          {/* Amount */}
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionContent}>
+              <Text style={styles.label}>AMOUNT</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. 5993"
+                placeholderTextColor="white"
+                keyboardType="numeric"
+                value={amount}
+                onChangeText={setAmount}
+              />
+            </View>
+          </View>
+
+          {/* Currency */}
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionContent}>
+              <Text style={styles.label}>CURRENCY</Text>
+              <RNPickerSelect
+                onValueChange={setCurrency}
+                value={currency}
+                placeholder={{ label: 'Select currency...', value: null }}
+                items={[
+                  { label: 'Dollar', value: 'Dollar' },
+                  { label: 'Rupee', value: 'Rupee' },
+                  { label: 'Other', value: 'Other' },
+                ]}
+                style={{
+                  inputIOS: styles.input,
+                  inputAndroid: styles.input,
+                  placeholder: { color: 'gray' },
                 }}
               />
-            )}
+            </View>
+          </View>
 
-            {showTimePicker && (
-              <DateTimePicker
-                value={date}
-                mode="time"
-                display="default"
-                onChange={(event, selectedTime) => {
-                  setShowTimePicker(false);
-                  if (selectedTime) {
-                    const updatedDate = new Date(date);
-                    updatedDate.setHours(selectedTime.getHours());
-                    updatedDate.setMinutes(selectedTime.getMinutes());
-                    setDate(updatedDate);
-                  }
+          {/* Payment Method */}
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionContent}>
+              <Text style={styles.label}>PAYMENT METHOD</Text>
+              <RNPickerSelect
+                onValueChange={setPayment}
+                value={payment}
+                placeholder={{ label: 'Select Payment Method...', value: null }}
+                items={[
+                  { label: 'UPI', value: 'UPI' },
+                  { label: 'Cash', value: 'Cash' },
+                  { label: 'Other', value: 'Other' },
+                ]}
+                style={{
+                  inputIOS: styles.input,
+                  inputAndroid: styles.input,
+                  placeholder: { color: 'gray' },
                 }}
               />
-            )}
+            </View>
           </View>
-        </View>
-
-        {/* Category */}
-        <View style={styles.sectionBox}>
-          <View style={styles.sectionContent}>
-            <Text style={styles.label}>CATEGORY</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. Electronics"
-              placeholderTextColor="white"
-              value={category}
-              onChangeText={setCategory}
-            />
-          </View>
-        </View>
-
-        {/* Amount */}
-        <View style={styles.sectionBox}>
-          <View style={styles.sectionContent}>
-            <Text style={styles.label}>AMOUNT</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. 5993"
-              placeholderTextColor="white"
-              keyboardType="numeric"
-              value={amount}
-              onChangeText={setAmount}
-            />
-          </View>
-        </View>
-        
-
-        {/* Currency */}
-        <View style={styles.sectionBox}>
-          <View style={styles.sectionContent}>
-            <Text style={styles.label}>CURRENCY</Text>
-            <RNPickerSelect
-              onValueChange={setCurrency}
-              value={currency}
-              placeholder={{ label: 'Select currency...', value: null }}
-              items={[
-                { label: 'Dollar', value: 'Dollar' },
-                { label: 'Rupee', value: 'Rupee' },
-                { label: 'Other', value: 'Other' },
-              ]}
-              style={{
-                inputIOS: styles.input,
-                inputAndroid: styles.input,
-                placeholder: { color: 'gray' },
-              }}
-            />
-          </View>
-        </View>
-
-        {/* Payment Method */}
-        <View style={styles.sectionBox}>
-          <View style={styles.sectionContent}>
-            <Text style={styles.label}>PAYMENT METHOD</Text>
-            <RNPickerSelect
-              onValueChange={setPayment}
-              value={payment}
-              placeholder={{ label: 'Select Payment Method...', value: null }}
-              items={[
-                { label: 'UPI', value: 'UPI' },
-                { label: 'Cash', value: 'Cash' },
-                { label: 'Other', value: 'Other' },
-              ]}
-              style={{
-                inputIOS: styles.input,
-                inputAndroid: styles.input,
-                placeholder: { color: 'gray' },
-              }}
-            />
-          </View>
-        </View>
         </View>
       </ScrollView>
 
@@ -222,11 +226,11 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
     alignItems: 'center',
     // height: '85%',
-    flexGrow:1,
-    overflow:'scroll'
+    flexGrow: 1,
+    overflow: 'scroll',
   },
   header: {
-    height:'20%',
+    height: '20%',
     width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -258,12 +262,10 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: 'blue',
     borderRadius: 30,
-    
   },
   sectionContent: {
     padding: 13,
     gap: 20,
-    
   },
   label: {
     color: 'white',
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Montserrat-SemiBold',
   },
-    button: {
+  button: {
     // position: 'absolute',
     bottom: 100,
     alignSelf: 'center',
@@ -287,12 +289,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 1,
     elevation: 5,
-    height:'5%',
-    width:'30%',
-    justifyContent:'center',
-    alignItems:'center'
+    height: '5%',
+    width: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-    btntext: {
+  btntext: {
     fontSize: 24,
     color: '#fff',
   },
