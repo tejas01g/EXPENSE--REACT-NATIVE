@@ -8,11 +8,27 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { auth, db } from '../src/firebaseConfig';
+import {
+  scale,
+  verticalScale,
+  fontSizes,
+  spacing,
+  padding,
+  borderRadius,
+  imageSizes,
+  buttonSizes,
+  inputSizes,
+  screenDimensions,
+  getResponsiveValue,
+} from './utils/responsive';
 
 const Add = ({ navigation }) => {
   const [currency, setCurrency] = useState('');
@@ -22,18 +38,21 @@ const Add = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddExpense = async () => {
     if (!category || !amount || !currency || !payment) {
-      Alert.alert('Please fill all fields');
+      Alert.alert('Missing Information', 'Please fill all required fields');
       return;
     }
 
     const userId = auth.currentUser?.uid;
     if (!userId) {
-      Alert.alert('User not logged in.');
+      Alert.alert('Authentication Error', 'User not logged in.');
       return;
     }
+
+    setIsSubmitting(true);
 
     const newExpense = {
       category,
@@ -43,173 +62,254 @@ const Add = ({ navigation }) => {
       date: Timestamp.fromDate(date),
       createdAt: Timestamp.now(),
     };
+
     try {
       await addDoc(collection(db, 'users', userId, 'transactions'), newExpense);
-      Alert.alert('Expense added!');
-      setAmount('');
-      setCategory('');
-      setCurrency('');
-      setPayment('');
-      // navigation.goBack();
+      Alert.alert('Success', 'Expense added successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setAmount('');
+            setCategory('');
+            setCurrency('');
+            setPayment('');
+            navigation.navigate('Home');
+          },
+        },
+      ]);
     } catch (error) {
       console.error('Error adding expense:', error.message);
-      Alert.alert('Failed to add expense. Try again.', error.message);
+      Alert.alert('Error', 'Failed to add expense. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headertext}>Add Expenses</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>Add Expense</Text>
+          <Text style={styles.headerSubtitle}>Track your spending</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('Profile')}
+        >
           <Image
             source={{
               uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d',
             }}
-            style={styles.profileimage}
+            style={styles.profileImage}
           />
         </TouchableOpacity>
       </View>
 
-      {/* Scrollable Form */}
+      {/* Form */}
       <ScrollView
-        style={{ height: '85%' }}
-        contentContainerStyle={styles.scrollContainer}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        {/* Date and Time */}
-        <View style={styles.wrapper}>
-          <View style={styles.sectionBox}>
-            <View style={styles.sectionContent}>
-              <Text style={styles.label}>TRANSACTION</Text>
-              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                <Text style={styles.value}>{date.toDateString()}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setShowTimePicker(true)}>
-                <Text style={styles.value}>
-                  {date.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+        {/* Transaction Date & Time */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Transaction Details</Text>
+          <View style={styles.dateTimeContainer}>
+            <TouchableOpacity 
+              style={styles.dateTimeButton}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.dateTimeLabel}>📅 Date</Text>
+              <Text style={styles.dateTimeValue}>{formatDate(date)}</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.dateTimeButton}
+              onPress={() => setShowTimePicker(true)}
+            >
+              <Text style={styles.dateTimeLabel}>🕒 Time</Text>
+              <Text style={styles.dateTimeValue}>{formatTime(date)}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Category */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Category</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g., Food, Transport, Shopping..."
+            placeholderTextColor="#666"
+            value={category}
+            onChangeText={setCategory}
+            autoCapitalize="words"
+          />
+        </View>
+
+        {/* Amount */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Amount</Text>
+          <View style={styles.amountContainer}>
+            <Text style={styles.currencySymbol}>$</Text>
+            <TextInput
+              style={styles.amountInput}
+              placeholder="0.00"
+              placeholderTextColor="#666"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={setAmount}
+            />
+          </View>
+        </View>
+
+        {/* Currency */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Currency</Text>
+          <View style={styles.pickerContainer}>
+            <RNPickerSelect
+              onValueChange={setCurrency}
+              value={currency}
+              placeholder={{ label: 'Select currency...', value: null }}
+              items={[
+                { label: '🇺🇸 US Dollar ($)', value: 'USD' },
+                { label: '🇪🇺 Euro (€)', value: 'EUR' },
+                { label: '🇬🇧 British Pound (£)', value: 'GBP' },
+                { label: '🇮🇳 Indian Rupee (₹)', value: 'INR' },
+                { label: '🇨🇦 Canadian Dollar (C$)', value: 'CAD' },
+                { label: '🇦🇺 Australian Dollar (A$)', value: 'AUD' },
+              ]}
+              style={{
+                inputIOS: styles.pickerInput,
+                inputAndroid: styles.pickerInput,
+                placeholder: { color: '#666' },
+              }}
+            />
+          </View>
+        </View>
+
+        {/* Payment Method */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Payment Method</Text>
+          <View style={styles.pickerContainer}>
+            <RNPickerSelect
+              onValueChange={setPayment}
+              value={payment}
+              placeholder={{ label: 'Select payment method...', value: null }}
+              items={[
+                { label: '💳 Credit/Debit Card', value: 'Card' },
+                { label: '💰 Cash', value: 'Cash' },
+                { label: '📱 Digital Wallet', value: 'Digital Wallet' },
+                { label: '🏦 Bank Transfer', value: 'Bank Transfer' },
+                { label: '📊 UPI', value: 'UPI' },
+                { label: '📄 Check', value: 'Check' },
+              ]}
+              style={{
+                inputIOS: styles.pickerInput,
+                inputAndroid: styles.pickerInput,
+                placeholder: { color: '#666' },
+              }}
+            />
+          </View>
+        </View>
+
+        {/* Quick Categories */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Categories</Text>
+          <View style={styles.quickCategories}>
+            {['Food', 'Transport', 'Shopping', 'Entertainment', 'Bills', 'Health'].map((cat) => (
+              <TouchableOpacity
+                key={cat}
+                style={[
+                  styles.quickCategoryButton,
+                  category === cat && styles.quickCategoryButtonActive
+                ]}
+                onPress={() => setCategory(cat)}
+              >
+                <Text style={[
+                  styles.quickCategoryText,
+                  category === cat && styles.quickCategoryTextActive
+                ]}>
+                  {cat}
                 </Text>
               </TouchableOpacity>
-
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      const updatedDate = new Date(selectedDate);
-                      updatedDate.setHours(date.getHours(), date.getMinutes());
-                      setDate(updatedDate);
-                    }
-                  }}
-                />
-              )}
-
-              {showTimePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="time"
-                  display="default"
-                  onChange={(event, selectedTime) => {
-                    setShowTimePicker(false);
-                    if (selectedTime) {
-                      const updatedDate = new Date(date);
-                      updatedDate.setHours(selectedTime.getHours());
-                      updatedDate.setMinutes(selectedTime.getMinutes());
-                      setDate(updatedDate);
-                    }
-                  }}
-                />
-              )}
-            </View>
-          </View>
-
-          {/* Category */}
-          <View style={styles.sectionBox}>
-            <View style={styles.sectionContent}>
-              <Text style={styles.label}>CATEGORY</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Electronics"
-                placeholderTextColor="white"
-                value={category}
-                onChangeText={setCategory}
-              />
-            </View>
-          </View>
-
-          {/* Amount */}
-          <View style={styles.sectionBox}>
-            <View style={styles.sectionContent}>
-              <Text style={styles.label}>AMOUNT</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. 5993"
-                placeholderTextColor="white"
-                keyboardType="numeric"
-                value={amount}
-                onChangeText={setAmount}
-              />
-            </View>
-          </View>
-
-          {/* Currency */}
-          <View style={styles.sectionBox}>
-            <View style={styles.sectionContent}>
-              <Text style={styles.label}>CURRENCY</Text>
-              <RNPickerSelect
-                onValueChange={setCurrency}
-                value={currency}
-                placeholder={{ label: 'Select currency...', value: null }}
-                items={[
-                  { label: 'Dollar', value: 'Dollar' },
-                  { label: 'Rupee', value: 'Rupee' },
-                  { label: 'Other', value: 'Other' },
-                ]}
-                style={{
-                  inputIOS: styles.input,
-                  inputAndroid: styles.input,
-                  placeholder: { color: 'gray' },
-                }}
-              />
-            </View>
-          </View>
-
-          {/* Payment Method */}
-          <View style={styles.sectionBox}>
-            <View style={styles.sectionContent}>
-              <Text style={styles.label}>PAYMENT METHOD</Text>
-              <RNPickerSelect
-                onValueChange={setPayment}
-                value={payment}
-                placeholder={{ label: 'Select Payment Method...', value: null }}
-                items={[
-                  { label: 'UPI', value: 'UPI' },
-                  { label: 'Cash', value: 'Cash' },
-                  { label: 'Other', value: 'Other' },
-                ]}
-                style={{
-                  inputIOS: styles.input,
-                  inputAndroid: styles.input,
-                  placeholder: { color: 'gray' },
-                }}
-              />
-            </View>
+            ))}
           </View>
         </View>
       </ScrollView>
 
-      {/* Fixed Add Button */}
-      <TouchableOpacity style={styles.button} onPress={handleAddExpense}>
-        <Text style={styles.btntext}>ADD</Text>
-      </TouchableOpacity>
-    </View>
+      {/* Add Button */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={[
+            styles.addButton,
+            isSubmitting && styles.addButtonDisabled
+          ]} 
+          onPress={handleAddExpense}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.addButtonText}>
+            {isSubmitting ? 'Adding...' : 'Add Expense'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Date/Time Pickers */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              const updatedDate = new Date(selectedDate);
+              updatedDate.setHours(date.getHours(), date.getMinutes());
+              setDate(updatedDate);
+            }
+          }}
+        />
+      )}
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={date}
+          mode="time"
+          display="default"
+          onChange={(event, selectedTime) => {
+            setShowTimePicker(false);
+            if (selectedTime) {
+              const updatedDate = new Date(date);
+              updatedDate.setHours(selectedTime.getHours());
+              updatedDate.setMinutes(selectedTime.getMinutes());
+              setDate(updatedDate);
+            }
+          }}
+        />
+      )}
+    </KeyboardAvoidingView>
   );
 };
 
@@ -218,84 +318,181 @@ export default Add;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
-    position: 'relative',
-  },
-  scrollContainer: {
-    // backgroundColor:'pink',
-    paddingBottom: 100,
-    alignItems: 'center',
-    // height: '85%',
-    flexGrow: 1,
-    overflow: 'scroll',
+    backgroundColor: '#000',
   },
   header: {
-    height: '20%',
-    width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginTop: 20,
-    alignSelf: 'center',
+    paddingHorizontal: padding.lg,
+    paddingTop: verticalScale(60),
+    paddingBottom: spacing.lg,
   },
-  wrapper: {
-    // height: '80%',
-    width: '100%',
-    alignItems: 'center',
+  headerLeft: {
+    flex: 1,
   },
-  headertext: {
-    fontSize: 25,
-    color: 'white',
+  headerTitle: {
+    fontSize: fontSizes['4xl'],
+    color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
+    fontWeight: '600',
   },
-  profileimage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 3,
-    borderColor: '#230771ff',
-  },
-  sectionBox: {
-    width: '85%',
-    backgroundColor: '#181819',
-    marginVertical: 10,
-    borderWidth: 0.5,
-    borderColor: 'blue',
-    borderRadius: 30,
-  },
-  sectionContent: {
-    padding: 13,
-    gap: 20,
-  },
-  label: {
-    color: 'white',
+  headerSubtitle: {
+    fontSize: fontSizes.base,
+    color: '#ccc',
     fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
   },
-  value: {
-    color: 'white',
-    fontSize: 16,
+  profileButton: {
+    width: scale(50),
+    height: scale(50),
+    borderRadius: borderRadius.full,
+    borderWidth: scale(3),
+    borderColor: '#390cc1',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.full,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: padding.lg,
+    paddingBottom: verticalScale(120),
+  },
+  section: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
+    fontSize: fontSizes.lg,
+    color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    marginBottom: spacing.md,
+  },
+  dateTimeContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  dateTimeButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  dateTimeLabel: {
+    fontSize: fontSizes.sm,
+    color: '#ccc',
+    fontFamily: 'Montserrat-Regular',
+    marginBottom: spacing.xs,
+  },
+  dateTimeValue: {
+    fontSize: fontSizes.base,
+    color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
   },
   input: {
-    color: 'white',
-    fontSize: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    fontSize: fontSizes.base,
+    color: '#fff',
+    fontFamily: 'Montserrat-Regular',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  amountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  currencySymbol: {
+    fontSize: fontSizes['2xl'],
+    color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    marginRight: spacing.sm,
+  },
+  amountInput: {
+    flex: 1,
+    fontSize: fontSizes['2xl'],
+    color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    paddingVertical: spacing.lg,
+  },
+  pickerContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  pickerInput: {
+    fontSize: fontSizes.base,
+    color: '#fff',
+    fontFamily: 'Montserrat-Regular',
+    padding: spacing.lg,
+  },
+  quickCategories: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  quickCategoryButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  quickCategoryButtonActive: {
+    backgroundColor: '#390cc1',
+    borderColor: '#390cc1',
+  },
+  quickCategoryText: {
+    fontSize: fontSizes.sm,
+    color: '#fff',
+    fontFamily: 'Montserrat-Regular',
+  },
+  quickCategoryTextActive: {
+    color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
   },
-  button: {
-    // position: 'absolute',
-    bottom: 100,
-    alignSelf: 'center',
-    backgroundColor: '#2196f3',
-    borderRadius: 50,
-    padding: 1,
-    elevation: 5,
-    height: '5%',
-    width: '30%',
-    justifyContent: 'center',
-    alignItems: 'center',
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: padding.lg,
+    paddingVertical: spacing.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
-  btntext: {
-    fontSize: 24,
+  addButton: {
+    backgroundColor: '#390cc1',
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#390cc1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  addButtonDisabled: {
+    backgroundColor: '#666',
+  },
+  addButtonText: {
+    fontSize: fontSizes.lg,
     color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: '600',
   },
 });

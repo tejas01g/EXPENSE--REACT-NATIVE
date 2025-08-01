@@ -1,419 +1,3 @@
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   Image,
-//   TouchableOpacity,
-//   ScrollView,
-// } from 'react-native';
-// import React, { useEffect, useState } from 'react';
-// import { AnimatedCircularProgress } from 'react-native-circular-progress';
-// import LinearGradient from 'react-native-linear-gradient';
-// import { db } from '../src/firebaseConfig';
-// import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-
-// const Home = ({ navigation }) => {
-
-//     const [transactions, setTransactions] = useState([]);
-
-//   useEffect(() => {
-//     const userId = auth.currentUser?.uid;
-//     if (!userId) return;
-
-//     const q = query(collection(db, 'users', userId, 'transactions'));
-
-//     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//       const trans = [];
-//       querySnapshot.forEach((doc) => {
-//         trans.push({ id: doc.id, ...doc.data() });
-//       });
-//       // Optional: Sort by createdAt descending
-//       const sorted = trans.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
-//       setTransactions(sorted);
-//     });
-
-//     return () => unsubscribe(); // Cleanup
-//   }, []);
-
-//   // const [transactions, setTransactions] = useState([]);
-  
-//   const quotes = [
-//     'Save money, and money will save you.',
-//     "Budgeting isn't limiting yourself. It's freedom.",
-//     'Track your spending, not just your earnings.',
-//     'Spend less than you earn—always.',
-//     'Make your money work for you.',
-//     'Avoid impulse buys—pause and plan.',
-//     'Little savings grow big over time.',
-//     'Stick to your budget, and build wealth.',
-//     'Be mindful, not stingy.',
-//     'Smart money = peaceful mind.',
-//   ];
-//   const [quote, setQuote] = useState('');
-
-
-//   useEffect(() => {
-//     const getRandomQuote = () => {
-//       const index = Math.floor(Math.random() * quotes.length);
-//       setQuote(quotes[index]);
-//     };
-
-//     getRandomQuote();
-//     const interval = setInterval(getRandomQuote, 60000);
-
-//     return() => clearInterval(interval);
-//   },[],
-  
-// );
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.header}>
-//         <Text style={styles.text}>Home</Text>
-
-//         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-//           <Image
-//             source={{
-//               uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//             }}
-//             style={styles.profileimage}
-//           />
-//         </TouchableOpacity>
-//       </View>
-
-//       <View style={styles.chartContainer}>
-//         <AnimatedCircularProgress
-//           size={200}
-//           width={25}
-//           fill={45}
-//           tintColor="#00e0ff"
-//           tintColorSecondary="#8e2de2"
-//           backgroundColor="#2d2f4a"
-//           arcSweepAngle={360}
-//           rotation={135}
-//           lineCap="round"
-//         >
-//           {() => (
-//             <View style={styles.innercontent}>
-//               <Text style={styles.balance}>$1159</Text>
-//               <Text style={styles.label}>Available Balance</Text>
-//             </View>
-//           )}
-//         </AnimatedCircularProgress>
-//       </View>
-
-//       {/* <LinearGradient colors={['#8b008b', '#9932cc', '#ff00ff']} style ={styles.thought}>   */}
-//       <View style={styles.thought}>
-//         <Text style={styles.thoughttxt}>Tip of the day</Text>
-
-//         <Text style={styles.thoughtdata}>{quote}</Text>
-//       </View>
-//       {/* </LinearGradient> */}
-//       {/* Second header */}
-
-//       <View style={styles.secheader}>
-//         <Text style={styles.expense}>Expenses</Text>
-//       </View>
-
-//       <ScrollView style={styles.expenselist}>
-//         {Array. isArray(transactions) && transactions.length > 0 ?(
-//            transactions.map((item) => (
-//            <View style={styles.row} key={item.id}>
-       
-//     <Image
-//       style={styles.logo}
-//       source={{
-//         uri:
-//         item.image ||
-//         'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop',
-//       }}
-//       /> )) ):(
-//          <Text style={styles.noData}>No transactions found.</Text>
-//       )};
-          
-//     <View style={styles.textContainer}>
-//       <Text style={styles.contain1}>{item.category || 'No Category'}</Text>
-//       <Text style={styles.time}>
-//         {item.date
-//           ? new Date(item.date.seconds * 1000).toLocaleDateString()
-//           : 'No Date'}
-//       </Text>
-//     </View>
-//     <Text style={styles.price}>
-//       ${item.amount ? item.amount.toFixed(2) : '0.00'}
-//     </Text>
-//   </View>
-//         // <View style={styles.row} key = {item.id}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>{item.category}</Text>
-//         //     <Text style={styles.time}>{item.date}</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>{item.amount}</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         // <View style={styles.row}>
-//         //   <Image
-//         //     style={styles.logo}
-//         //     source={{
-//         //       uri: 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-//         //     }}
-//         //   />
-//         //   <View style={styles.textContainer}>
-//         //     <Text style={styles.contain1}>Nike Air Max 2090</Text>
-//         //     <Text style={styles.time}>09 Oct 2023</Text>
-//         //   </View>
-//         //   <Text style={styles.price}>-$50</Text>
-//         // </View>
-//         ))}
-//       </ScrollView>
-//     </View>
-//     // </LinearGradient>
-//   );
-// };
-
-// export default Home;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     width: '100%',
-//     height: '100%',
-//     backgroundColor: 'black',
-//   },
-//   text: {
-//     fontSize: 25,
-//     color: 'white',
-//     fontFamily: 'Montserrat-SemiBold',
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     padding: '4%',
-//     paddingTop: '15%',
-//   },
-//   profileimage: {
-//     width: 50,
-//     height: 50,
-//     borderRadius: 50,
-//     borderWidth: 3,
-//     borderColor: '#390cc1ff',
-//   },
-
-//   chartContainer: {
-//     marginTop: '4%',
-//     alignItems: 'center',
-//   },
-//   innercontent: {
-//     alignItems: 'center',
-//   },
-//   balance: {
-//     fontSize: 22,
-//     // fontWeight: 'bold',
-//     fontFamily: 'Montserrat-SemiBold',
-//     color: 'white',
-//   },
-//   label: {
-//     fontSize: 14,
-//     color: 'white',
-//     fontFamily: 'Montserrat-Regular',
-//   },
-
-//   thought: {
-//     backgroundColor: 'transparent',
-//     marginLeft: '8%',
-//     marginTop: '9%',
-//     width: '85%',
-//     height: '10%',
-//     paddingLeft: '5%',
-//     borderWidth: 1,
-//     borderColor: '#301a6dff',
-//     borderRadius: 15,
-//     gap: '2%',
-//     justifyContent: 'center',
-//   },
-
-//   thoughttxt: {
-//     fontSize: 14,
-//     paddingBottom: '5%',
-//     color: 'white',
-//     fontFamily: 'Montserrat-Regular',
-//   },
-//   thoughtdata: {
-//     fontSize: 16,
-//     marginBottom: '8%',
-//     color: 'white',
-//     // fontWeight: 'bold',
-//     fontFamily: 'Montserrat-SemiBold',
-//   },
-
-//   secheader: {},
-
-//   expense: {
-//     paddingTop:'9%',
-//     padding: '6%',
-//     fontSize: 25,
-//     color:'white',
-//     fontFamily: 'Montserrat-SemiBold',
-//     // fontWeight: 'bold',
-//   },
-
-//   contain1: {
-//     paddingLeft: '8%',
-//     fontSize: 16,
-//     fontWeight: '500',
-//     color: 'white',
-//     fontFamily: 'Montserrat-Regular',
-//     // width:'200%',
-//     // height:'40'
-//   },
-//   expenselist: {
-//     padding: 16,
-//   },
-//   row: {
-//     gap: '5%',
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     // backgroundColor: 'blue',
-//     justifyContent: 'space-between',
-//     marginBottom: '5%',
-//   },
-//   logo: {
-//     width: 50,
-//     height: 50,
-//     borderRadius: 50,
-//   },
-//   time: {
-//     fontSize: 10,
-//     // fontWeight: 'bold',
-//     paddingLeft: '11%',
-//     marginBottom: '5%',
-//     color: 'white',
-//     fontFamily: 'Montserrat-SemiBold',
-//   },
-//   textContainer: {
-//     flex: 1,
-//     flexDirection: 'column',
-//     justifyContent: 'center',
-//   },
-
-//   price: {
-//     fontSize: 16,
-//     // fontWeight: 600,
-//     color: 'red',
-//     marginLeft: '5%',
-//     fontFamily: 'Montserrat-SemiBold',
-//   },
-// });
-
-
 import {
   View,
   Text,
@@ -421,11 +5,24 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { auth, db } from '../src/firebaseConfig';
 import { collection, onSnapshot, query } from 'firebase/firestore';
+import {
+  scale,
+  verticalScale,
+  fontSizes,
+  spacing,
+  padding,
+  borderRadius,
+  imageSizes,
+  screenDimensions,
+  getResponsiveValue,
+  chartDimensions,
+} from './utils/responsive';
 
 const Home = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
@@ -435,13 +32,13 @@ const Home = ({ navigation }) => {
     if (!userId) return;
 
     const q = query(collection(db, 'users', userId, 'transactions'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const unsubscribe = onSnapshot(q, querySnapshot => {
       const trans = [];
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         trans.push({ id: doc.id, ...doc.data() });
       });
       const sorted = trans.sort(
-        (a, b) => b.createdAt?.seconds - a.createdAt?.seconds
+        (a, b) => b.createdAt?.seconds - a.createdAt?.seconds,
       );
       setTransactions(sorted);
     });
@@ -474,17 +71,34 @@ const Home = ({ navigation }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Calculate total balance from transactions
+  const totalBalance = transactions.reduce((sum, transaction) => {
+    return sum + (transaction.amount || 0);
+  }, 0);
+
+  // Calculate progress percentage (example: based on monthly budget)
+  const monthlyBudget = 2000; // This could come from user settings
+  const progressPercentage = Math.min((totalBalance / monthlyBudget) * 100, 100);
+
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.text}>Home</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>Home</Text>
+          <Text style={styles.headerSubtitle}>Welcome back!</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('Profile')}
+        >
           <Image
             source={{
               uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format',
             }}
-            style={styles.profileimage}
+            style={styles.profileImage}
           />
         </TouchableOpacity>
       </View>
@@ -492,63 +106,119 @@ const Home = ({ navigation }) => {
       {/* Balance Chart */}
       <View style={styles.chartContainer}>
         <AnimatedCircularProgress
-          size={200}
-          width={25}
-          fill={45}
+          size={getResponsiveValue(180, 200, 220, 250)}
+          width={scale(20)}
+          fill={progressPercentage}
           tintColor="#00e0ff"
           tintColorSecondary="#8e2de2"
           backgroundColor="#2d2f4a"
           arcSweepAngle={360}
           rotation={135}
-          lineCap="round">
+          lineCap="round"
+        >
           {() => (
-            <View style={styles.innercontent}>
-              <Text style={styles.balance}>$1159</Text>
-              <Text style={styles.label}>Available Balance</Text>
+            <View style={styles.balanceContent}>
+              <Text style={styles.balanceAmount}>${totalBalance.toFixed(2)}</Text>
+              <Text style={styles.balanceLabel}>Available Balance</Text>
+              <Text style={styles.budgetProgress}>
+                {progressPercentage.toFixed(1)}% of budget
+              </Text>
             </View>
           )}
         </AnimatedCircularProgress>
       </View>
 
       {/* Tip of the Day */}
-      <View style={styles.thought}>
-        <Text style={styles.thoughttxt}>Tip of the day</Text>
-        <Text style={styles.thoughtdata}>{quote}</Text>
+      <View style={styles.tipContainer}>
+        <View style={styles.tipHeader}>
+          <Text style={styles.tipIcon}>💡</Text>
+          <Text style={styles.tipTitle}>Tip of the day</Text>
+        </View>
+        <Text style={styles.tipText}>{quote}</Text>
+      </View>
+
+      {/* Quick Stats */}
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{transactions.length}</Text>
+          <Text style={styles.statLabel}>Transactions</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>
+            ${transactions.length > 0 
+              ? (totalBalance / transactions.length).toFixed(2) 
+              : '0.00'
+            }
+          </Text>
+          <Text style={styles.statLabel}>Avg. Expense</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>
+            ${(monthlyBudget - totalBalance).toFixed(2)}
+          </Text>
+          <Text style={styles.statLabel}>Remaining</Text>
+        </View>
       </View>
 
       {/* Expenses Header */}
-      <View style={styles.secheader}>
-        <Text style={styles.expense}>Expenses</Text>
+      <View style={styles.expensesHeader}>
+        <Text style={styles.expensesTitle}>Recent Expenses</Text>
+        <TouchableOpacity 
+          style={styles.viewAllButton}
+          onPress={() => navigation.navigate('Analytics')}
+        >
+          <Text style={styles.viewAllText}>View All</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Transactions List */}
-      <ScrollView style={styles.expenselist}>
+      <ScrollView 
+        style={styles.transactionsList}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.transactionsContent}
+      >
         {Array.isArray(transactions) && transactions.length > 0 ? (
-          transactions.map((item) => (
-            <View style={styles.row} key={item.id}>
-              <Image
-                style={styles.logo}
-                source={{
-                  uri:
-                    item.image ||
-                    'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format',
-                }}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.contain1}>{item.category || 'No Category'}</Text>
-                <Text style={styles.time}>
-                  {item.date
-                    ? new Date(item.date.seconds * 1000).toLocaleDateString()
-                    : 'No Date'}
-                </Text>
+          transactions.slice(0, 5).map(item => (
+            <View style={styles.transactionItem} key={item.id}>
+              <View style={styles.transactionLeft}>
+                <Image
+                  style={styles.transactionIcon}
+                  source={{
+                    uri:
+                      item.image ||
+                      'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format',
+                  }}
+                />
+                <View style={styles.transactionInfo}>
+                  <Text style={styles.transactionCategory}>
+                    {item.category || 'No Category'}
+                  </Text>
+                  <Text style={styles.transactionDate}>
+                    {item.date
+                      ? new Date(item.date.seconds * 1000).toLocaleDateString()
+                      : 'No Date'}
+                  </Text>
+                </View>
               </View>
-              <Text style={styles.price}>
+              <Text style={styles.transactionAmount}>
                 ${item.amount ? item.amount.toFixed(2) : '0.00'}
               </Text>
             </View>
           ))
         ) : (
-          <Text style={styles.noData}>No transactions found.</Text>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyIcon}>📊</Text>
+            <Text style={styles.emptyTitle}>No transactions yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Start tracking your expenses to see them here
+            </Text>
+            <TouchableOpacity 
+              style={styles.addFirstButton}
+              onPress={() => navigation.navigate('Add')}
+            >
+              <Text style={styles.addFirstButtonText}>Add Your First Expense</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </ScrollView>
     </View>
@@ -559,132 +229,236 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'black',
-  },
-  text: {
-    fontSize: 25,
-    color: 'white',
-    fontFamily: 'Montserrat-SemiBold',
+    flex: 1,
+    backgroundColor: '#000',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '4%',
-    paddingTop: '15%',
+    paddingHorizontal: padding.lg,
+    paddingTop: verticalScale(60),
+    paddingBottom: spacing.lg,
   },
-  profileimage: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    borderWidth: 3,
-    borderColor: '#390cc1ff',
+  headerLeft: {
+    flex: 1,
   },
-
-  chartContainer: {
-    marginTop: '4%',
-    alignItems: 'center',
-  },
-  innercontent: {
-    alignItems: 'center',
-  },
-  balance: {
-    fontSize: 22,
-    // fontWeight: 'bold',
+  headerTitle: {
+    fontSize: fontSizes['4xl'],
+    color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
-    color: 'white',
+    fontWeight: '600',
   },
-  label: {
-    fontSize: 14,
-    color: 'white',
+  headerSubtitle: {
+    fontSize: fontSizes.base,
+    color: '#ccc',
     fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
   },
-
-  thought: {
-    backgroundColor: 'transparent',
-    marginLeft: '8%',
-    marginTop: '9%',
-    width: '85%',
-    height: '10%',
-    paddingLeft: '5%',
-    borderWidth: 1,
-    borderColor: '#301a6dff',
-    borderRadius: 15,
-    gap: '2%',
+  profileButton: {
+    width: scale(50),
+    height: scale(50),
+    borderRadius: borderRadius.full,
+    borderWidth: scale(3),
+    borderColor: '#390cc1',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.full,
+  },
+  chartContainer: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl,
+  },
+  balanceContent: {
+    alignItems: 'center',
     justifyContent: 'center',
   },
-
-  thoughttxt: {
-    fontSize: 14,
-    paddingBottom: '5%',
-    color: 'white',
-    fontFamily: 'Montserrat-Regular',
-  },
-  thoughtdata: {
-    fontSize: 16,
-    marginBottom: '8%',
-    color: 'white',
-    // fontWeight: 'bold',
+  balanceAmount: {
+    fontSize: getResponsiveValue(fontSizes.xl, fontSizes['2xl'], fontSizes['3xl'], fontSizes['4xl']),
     fontFamily: 'Montserrat-SemiBold',
+    color: '#fff',
+    fontWeight: '600',
   },
-
-  secheader: {},
-
-  expense: {
-    paddingTop:'9%',
-    padding: '6%',
-    fontSize: 25,
-    color:'white',
-    fontFamily: 'Montserrat-SemiBold',
-    // fontWeight: 'bold',
-  },
-
-  contain1: {
-    paddingLeft: '8%',
-    fontSize: 16,
-    fontWeight: '500',
-    color: 'white',
+  balanceLabel: {
+    fontSize: fontSizes.sm,
+    color: '#ccc',
     fontFamily: 'Montserrat-Regular',
-    // width:'200%',
-    // height:'40'
+    marginTop: spacing.xs,
   },
-  expenselist: {
-    padding: 16,
+  budgetProgress: {
+    fontSize: fontSizes.xs,
+    color: '#888',
+    fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
   },
-  row: {
-    gap: '5%',
+  tipContainer: {
+    backgroundColor: 'rgba(57, 12, 193, 0.1)',
+    marginHorizontal: padding.lg,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(57, 12, 193, 0.3)',
+    marginBottom: spacing.xl,
+  },
+  tipHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    // backgroundColor: 'blue',
-    justifyContent: 'space-between',
-    marginBottom: '5%',
+    marginBottom: spacing.sm,
   },
-  logo: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
+  tipIcon: {
+    fontSize: fontSizes.lg,
+    marginRight: spacing.sm,
   },
-  time: {
-    fontSize: 10,
-    // fontWeight: 'bold',
-    paddingLeft: '11%',
-    marginBottom: '5%',
-    color: 'white',
+  tipTitle: {
+    fontSize: fontSizes.base,
+    color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
   },
-  textContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
+  tipText: {
+    fontSize: fontSizes.base,
+    color: '#fff',
+    fontFamily: 'Montserrat-Regular',
+    lineHeight: fontSizes.base * 1.4,
   },
-
-  price: {
-    fontSize: 16,
-    // fontWeight: 600,
-    color: 'red',
-    marginLeft: '5%',
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: padding.lg,
+    marginBottom: spacing.xl,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginHorizontal: spacing.xs,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  statValue: {
+    fontSize: fontSizes.lg,
+    color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: '600',
+  },
+  statLabel: {
+    fontSize: fontSizes.xs,
+    color: '#ccc',
+    fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
+    textAlign: 'center',
+  },
+  expensesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: padding.lg,
+    marginBottom: spacing.md,
+  },
+  expensesTitle: {
+    fontSize: fontSizes['2xl'],
+    color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: '600',
+  },
+  viewAllButton: {
+    backgroundColor: 'rgba(57, 12, 193, 0.2)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(57, 12, 193, 0.3)',
+  },
+  viewAllText: {
+    fontSize: fontSizes.sm,
+    color: '#00e0ff',
+    fontFamily: 'Montserrat-Regular',
+  },
+  transactionsList: {
+    flex: 1,
+  },
+  transactionsContent: {
+    paddingHorizontal: padding.lg,
+    paddingBottom: spacing.xl,
+  },
+  transactionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  transactionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  transactionIcon: {
+    width: scale(40),
+    height: scale(40),
+    borderRadius: borderRadius.full,
+    marginRight: spacing.md,
+  },
+  transactionInfo: {
+    flex: 1,
+  },
+  transactionCategory: {
+    fontSize: fontSizes.base,
+    color: '#fff',
+    fontFamily: 'Montserrat-Regular',
+    fontWeight: '500',
+  },
+  transactionDate: {
+    fontSize: fontSizes.sm,
+    color: '#ccc',
+    fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
+  },
+  transactionAmount: {
+    fontSize: fontSizes.base,
+    color: '#ff6b6b',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: '600',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: spacing['3xl'],
+  },
+  emptyIcon: {
+    fontSize: scale(48),
+    marginBottom: spacing.lg,
+  },
+  emptyTitle: {
+    fontSize: fontSizes.xl,
+    color: '#fff',
+    fontFamily: 'Montserrat-SemiBold',
+    marginBottom: spacing.sm,
+  },
+  emptySubtitle: {
+    fontSize: fontSizes.base,
+    color: '#ccc',
+    fontFamily: 'Montserrat-Regular',
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+  },
+  addFirstButton: {
+    backgroundColor: '#390cc1',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+  },
+  addFirstButtonText: {
+    fontSize: fontSizes.base,
+    color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
   },
 });
