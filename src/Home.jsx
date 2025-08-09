@@ -18,14 +18,13 @@ import {
   spacing,
   padding,
   borderRadius,
-  imageSizes,
-  screenDimensions,
   getResponsiveValue,
-  chartDimensions,
 } from './utils/responsive';
+import { useUserProfile } from './hooks/useUserProfile';
 
 const Home = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
+  const { profileImageUrl, userName } = useUserProfile();
 
   useEffect(() => {
     const userId = auth.currentUser?.uid;
@@ -46,21 +45,21 @@ const Home = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
-  const quotes = [
-    'Save money, and money will save you.',
-    "Budgeting isn't limiting yourself. It's freedom.",
-    'Track your spending, not just your earnings.',
-    'Spend less than you earn—always.',
-    'Make your money work for you.',
-    'Avoid impulse buys—pause and plan.',
-    'Little savings grow big over time.',
-    'Stick to your budget, and build wealth.',
-    'Be mindful, not stingy.',
-    'Smart money = peaceful mind.',
-  ];
-
   const [quote, setQuote] = useState('');
   useEffect(() => {
+    const quotes = [
+      'Save money, and money will save you.',
+      "Budgeting isn't limiting yourself. It's freedom.",
+      'Track your spending, not just your earnings.',
+      'Spend less than you earn—always.',
+      'Make your money work for you.',
+      'Avoid impulse buys—pause and plan.',
+      'Little savings grow big over time.',
+      'Stick to your budget, and build wealth.',
+      'Be mindful, not stingy.',
+      'Smart money = peaceful mind.',
+    ];
+
     const getRandomQuote = () => {
       const index = Math.floor(Math.random() * quotes.length);
       setQuote(quotes[index]);
@@ -88,7 +87,9 @@ const Home = ({ navigation }) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Home</Text>
-          <Text style={styles.headerSubtitle}>Welcome back!</Text>
+          <Text style={styles.headerSubtitle}>
+            Welcome back{userName ? `, ${userName}` : ''}!
+          </Text>
         </View>
         <TouchableOpacity 
           style={styles.profileButton}
@@ -96,7 +97,7 @@ const Home = ({ navigation }) => {
         >
           <Image
             source={{
-              uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format',
+              uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format',
             }}
             style={styles.profileImage}
           />

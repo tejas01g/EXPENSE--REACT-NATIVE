@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 
 const Welcome = ({navigation}) => {
   return (

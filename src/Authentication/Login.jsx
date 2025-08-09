@@ -20,9 +20,6 @@ import {
   spacing,
   padding,
   borderRadius,
-  buttonSizes,
-  inputSizes,
-  screenDimensions,
 } from '../utils/responsive';
 
 const Login = ({ navigation }) => {

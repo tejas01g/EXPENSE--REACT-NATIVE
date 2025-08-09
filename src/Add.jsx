@@ -23,12 +23,11 @@ import {
   spacing,
   padding,
   borderRadius,
-  imageSizes,
-  buttonSizes,
-  inputSizes,
-  screenDimensions,
   getResponsiveValue,
+  headerDimensions,
+  navigationDimensions,
 } from './utils/responsive';
+import { useUserProfile } from './hooks/useUserProfile';
 
 const Add = ({ navigation }) => {
   const [currency, setCurrency] = useState('');
@@ -39,6 +38,7 @@ const Add = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { profileImageUrl } = useUserProfile();
 
   const handleAddExpense = async () => {
     if (!category || !amount || !currency || !payment) {
@@ -85,8 +85,8 @@ const Add = ({ navigation }) => {
     }
   };
 
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', {
+  const formatDate = (dateToFormat) => {
+    return dateToFormat.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -94,11 +94,19 @@ const Add = ({ navigation }) => {
     });
   };
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', {
+  const formatTime = (dateToFormat) => {
+    return dateToFormat.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  // Calculate bottom position based on platform
+  const getBottomPosition = () => {
+    if (Platform.OS === 'ios') {
+      return navigationDimensions.height + verticalScale(10);
+    }
+    return navigationDimensions.height + verticalScale(5);
   };
 
   return (
@@ -108,7 +116,7 @@ const Add = ({ navigation }) => {
     >
       <StatusBar barStyle="light-content" backgroundColor="#000" />
       
-      {/* Header */}
+      {/* Enhanced Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Add Expense</Text>
@@ -120,21 +128,21 @@ const Add = ({ navigation }) => {
         >
           <Image
             source={{
-              uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d',
+              uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d',
             }}
             style={styles.profileImage}
           />
         </TouchableOpacity>
       </View>
 
-      {/* Form */}
+      {/* Enhanced Form */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Transaction Date & Time */}
+        {/* Enhanced Transaction Date & Time */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Transaction Details</Text>
           <View style={styles.dateTimeContainer}>
@@ -156,7 +164,7 @@ const Add = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Category */}
+        {/* Enhanced Category */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Category</Text>
           <TextInput
@@ -169,7 +177,7 @@ const Add = ({ navigation }) => {
           />
         </View>
 
-        {/* Amount */}
+        {/* Enhanced Amount */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Amount</Text>
           <View style={styles.amountContainer}>
@@ -185,7 +193,7 @@ const Add = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Currency */}
+        {/* Enhanced Currency */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Currency</Text>
           <View style={styles.pickerContainer}>
@@ -210,7 +218,7 @@ const Add = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Payment Method */}
+        {/* Enhanced Payment Method */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Payment Method</Text>
           <View style={styles.pickerContainer}>
@@ -235,7 +243,7 @@ const Add = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Quick Categories */}
+        {/* Enhanced Quick Categories */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Categories</Text>
           <View style={styles.quickCategories}>
@@ -260,8 +268,8 @@ const Add = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Add Button */}
-      <View style={styles.buttonContainer}>
+      {/* Enhanced Add Button */}
+      <View style={[styles.buttonContainer, { bottom: getBottomPosition() }]}>
         <TouchableOpacity 
           style={[
             styles.addButton,
@@ -325,31 +333,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: padding.lg,
-    paddingTop: verticalScale(60),
+    paddingTop: headerDimensions.paddingTop,
     paddingBottom: spacing.lg,
+    minHeight: headerDimensions.height,
   },
   headerLeft: {
     flex: 1,
   },
   headerTitle: {
-    fontSize: fontSizes['4xl'],
+    fontSize: headerDimensions.titleSize,
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     fontWeight: '600',
+    letterSpacing: 0.5,
   },
   headerSubtitle: {
-    fontSize: fontSizes.base,
+    fontSize: headerDimensions.subtitleSize,
     color: '#ccc',
     fontFamily: 'Montserrat-Regular',
     marginTop: spacing.xs,
+    letterSpacing: 0.3,
   },
   profileButton: {
-    width: scale(50),
-    height: scale(50),
+    width: headerDimensions.profileSize,
+    height: headerDimensions.profileSize,
     borderRadius: borderRadius.full,
-    borderWidth: scale(3),
+    borderWidth: getResponsiveValue(scale(2), scale(3), scale(3), scale(4)),
     borderColor: '#390cc1',
     overflow: 'hidden',
+    shadowColor: '#390cc1',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   profileImage: {
     width: '100%',
@@ -361,16 +380,17 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: padding.lg,
-    paddingBottom: verticalScale(120),
+    paddingBottom: verticalScale(180), // Increased to account for button and navigation
   },
   section: {
     marginBottom: spacing.xl,
   },
   sectionTitle: {
-    fontSize: fontSizes.lg,
+    fontSize: getResponsiveValue(fontSizes.lg, fontSizes.xl, fontSizes.xl, fontSizes['2xl']),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     marginBottom: spacing.md,
+    letterSpacing: 0.3,
   },
   dateTimeContainer: {
     flexDirection: 'row',
@@ -385,25 +405,28 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   dateTimeLabel: {
-    fontSize: fontSizes.sm,
+    fontSize: getResponsiveValue(fontSizes.sm, fontSizes.base, fontSizes.base, fontSizes.lg),
     color: '#ccc',
     fontFamily: 'Montserrat-Regular',
     marginBottom: spacing.xs,
+    letterSpacing: 0.3,
   },
   dateTimeValue: {
-    fontSize: fontSizes.base,
+    fontSize: getResponsiveValue(fontSizes.base, fontSizes.lg, fontSizes.lg, fontSizes.xl),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
+    letterSpacing: 0.3,
   },
   input: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
-    fontSize: fontSizes.base,
+    fontSize: getResponsiveValue(fontSizes.base, fontSizes.lg, fontSizes.lg, fontSizes.xl),
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    letterSpacing: 0.3,
   },
   amountContainer: {
     flexDirection: 'row',
@@ -415,17 +438,19 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   currencySymbol: {
-    fontSize: fontSizes['2xl'],
+    fontSize: getResponsiveValue(fontSizes['2xl'], fontSizes['3xl'], fontSizes['3xl'], fontSizes['4xl']),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     marginRight: spacing.sm,
+    letterSpacing: 0.3,
   },
   amountInput: {
     flex: 1,
-    fontSize: fontSizes['2xl'],
+    fontSize: getResponsiveValue(fontSizes['2xl'], fontSizes['3xl'], fontSizes['3xl'], fontSizes['4xl']),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     paddingVertical: spacing.lg,
+    letterSpacing: 0.3,
   },
   pickerContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -435,10 +460,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   pickerInput: {
-    fontSize: fontSizes.base,
+    fontSize: getResponsiveValue(fontSizes.base, fontSizes.lg, fontSizes.lg, fontSizes.xl),
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
     padding: spacing.lg,
+    letterSpacing: 0.3,
   },
   quickCategories: {
     flexDirection: 'row',
@@ -458,22 +484,24 @@ const styles = StyleSheet.create({
     borderColor: '#390cc1',
   },
   quickCategoryText: {
-    fontSize: fontSizes.sm,
+    fontSize: getResponsiveValue(fontSizes.sm, fontSizes.base, fontSizes.base, fontSizes.lg),
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
+    letterSpacing: 0.3,
   },
   quickCategoryTextActive: {
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
+    letterSpacing: 0.3,
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 0,
     left: 0,
     right: 0,
     paddingHorizontal: padding.lg,
     paddingVertical: spacing.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    // Removed background color
+    // Removed border and shadow for cleaner look
   },
   addButton: {
     backgroundColor: '#390cc1',
@@ -490,9 +518,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
   },
   addButtonText: {
-    fontSize: fontSizes.lg,
+    fontSize: getResponsiveValue(fontSizes.lg, fontSizes.xl, fontSizes.xl, fontSizes['2xl']),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });

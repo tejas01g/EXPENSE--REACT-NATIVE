@@ -204,13 +204,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: 'Montserrat-SemiBold',
   },
-  contain1: {
-    paddingLeft: 10,
-    fontSize: 19,
-    // fontWeight: '500',
-    color: 'white',
-    fontFamily: 'Montserrat-Regular',
-    // width:'200%',
-    // height:'40'
-  },
 });

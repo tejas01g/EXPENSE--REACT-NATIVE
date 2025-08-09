@@ -6,14 +6,15 @@ import {
   Image,
   ScrollView,
   Alert,
-  Dimensions,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { auth, db } from '../src/firebaseConfig';
+import { auth, db, storage } from '../src/firebaseConfig';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {
   scale,
   verticalScale,
@@ -21,16 +22,21 @@ import {
   spacing,
   padding,
   borderRadius,
-  imageSizes,
-  buttonSizes,
-  screenDimensions,
   getResponsiveValue,
 } from './utils/responsive';
+import {
+  validateImage,
+  getImagePickerOptions,
+  generateImageFileName,
+  getStoragePath,
+  formatFileSize,
+} from './utils/imageUtils';
 
 const Profile = ({ navigation }) => {
   const [imageUri, setImageUri] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
 
   // 🔐 Handle Logout
   const handleLogout = async () => {
@@ -68,7 +74,12 @@ const Profile = ({ navigation }) => {
           const docRef = doc(db, 'users', user.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setUserInfo(docSnap.data());
+            const data = docSnap.data();
+            setUserInfo(data);
+            // Set profile image if it exists
+            if (data.profileImageUrl) {
+              setImageUri(data.profileImageUrl);
+            }
           } else {
             console.log('No user data found!');
           }
@@ -83,22 +94,108 @@ const Profile = ({ navigation }) => {
     fetchUserData();
   }, []);
 
-  // 📸 Open Gallery
+  // 📤 Upload Image to Firebase Storage
+  const uploadImageToFirebase = async (uri, fileName) => {
+    try {
+      setIsUploading(true);
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Convert URI to blob
+      const response = await fetch(uri);
+      if (!response.ok) {
+        throw new Error('Failed to fetch image');
+      }
+      
+      const blob = await response.blob();
+      
+      // Check blob size
+      if (blob.size > 5 * 1024 * 1024) {
+        throw new Error('Image size must be less than 5MB');
+      }
+
+      // Create a reference to the file location
+      const storagePath = getStoragePath(user.uid, fileName);
+      const imageRef = ref(storage, storagePath);
+
+      // Upload the blob to Firebase Storage
+      const uploadResult = await uploadBytes(imageRef, blob);
+      console.log('Image uploaded successfully:', uploadResult);
+
+      // Get the download URL
+      const downloadURL = await getDownloadURL(uploadResult.ref);
+      console.log('Download URL:', downloadURL);
+
+      // Update user profile in Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        profileImageUrl: downloadURL,
+        profileImageUpdatedAt: new Date(),
+        profileImageFileName: fileName,
+      });
+
+      // Update local state
+      setImageUri(downloadURL);
+      setUserInfo(prev => ({
+        ...prev,
+        profileImageUrl: downloadURL,
+        profileImageUpdatedAt: new Date(),
+        profileImageFileName: fileName,
+      }));
+
+      Alert.alert('Success', 'Profile image updated successfully!');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Alert.alert('Upload Failed', error.message || 'Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // 📸 Open Gallery and Upload Image
   const openGallery = () => {
+    if (isUploading) {
+      Alert.alert('Upload in Progress', 'Please wait for the current upload to complete.');
+      return;
+    }
+
     launchImageLibrary(
-      { 
-        mediaType: 'photo', 
-        quality: 0.8,
-        maxWidth: 500,
-        maxHeight: 500,
-      },
+      getImagePickerOptions(),
       response => {
-        if (!response.didCancel && !response.errorCode) {
-          const uri = response.assets[0].uri;
-          setImageUri(uri);
-          // Here you could upload the image to Firebase Storage
-          // and update the user profile
+        if (response.didCancel) {
+          return;
         }
+
+        if (response.errorCode) {
+          Alert.alert('Error', 'Failed to access gallery. Please try again.');
+          return;
+        }
+
+        // Validate the selected image
+        const validation = validateImage(response);
+        if (!validation.isValid) {
+          Alert.alert('Invalid Image', validation.error);
+          return;
+        }
+
+        const asset = validation.asset;
+        const uri = asset.uri;
+        
+        // Show file size info
+        if (asset.fileSize) {
+          console.log('Selected image size:', formatFileSize(asset.fileSize));
+        }
+
+        // Generate unique filename
+        const fileName = generateImageFileName(auth.currentUser?.uid);
+        
+        // Show preview immediately
+        setImageUri(uri);
+        
+        // Upload to Firebase
+        uploadImageToFirebase(uri, fileName);
       }
     );
   };
@@ -136,7 +233,11 @@ const Profile = ({ navigation }) => {
 
         {/* Profile Section */}
         <View style={styles.profileSection}>
-          <TouchableOpacity onPress={openGallery} style={styles.profileImageContainer}>
+          <TouchableOpacity 
+            onPress={openGallery} 
+            style={styles.profileImageContainer}
+            disabled={isUploading}
+          >
             <Image
               source={{
                 uri: imageUri
@@ -146,8 +247,18 @@ const Profile = ({ navigation }) => {
               style={styles.profileImage}
             />
             <View style={styles.editImageOverlay}>
-              <Text style={styles.editImageText}>📷</Text>
+              {isUploading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.editImageText}>📷</Text>
+              )}
             </View>
+            {isUploading && (
+              <View style={styles.uploadingOverlay}>
+                <ActivityIndicator size="large" color="#390cc1" />
+                <Text style={styles.uploadingText}>Uploading...</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           {isLoading ? (
@@ -160,6 +271,11 @@ const Profile = ({ navigation }) => {
               <Text style={styles.userEmail}>{userInfo.email || 'user@email.com'}</Text>
               {userInfo.dob && (
                 <Text style={styles.userDOB}>🎂 {userInfo.dob}</Text>
+              )}
+              {userInfo.profileImageUpdatedAt && (
+                <Text style={styles.lastUpdatedText}>
+                  Profile updated: {new Date(userInfo.profileImageUpdatedAt.toDate()).toLocaleDateString()}
+                </Text>
               )}
             </View>
           ) : (
@@ -290,8 +406,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   profileImage: {
-    width: getResponsiveValue(imageSizes.profile, imageSizes.profile, imageSizes.largeProfile, imageSizes.largeProfile),
-    height: getResponsiveValue(imageSizes.profile, imageSizes.profile, imageSizes.largeProfile, imageSizes.largeProfile),
+    width: getResponsiveValue(scale(120), scale(140), scale(160), scale(180)),
+    height: getResponsiveValue(scale(120), scale(140), scale(160), scale(180)),
     borderRadius: borderRadius.full,
     borderWidth: scale(3),
     borderColor: '#390cc1',
@@ -311,6 +427,23 @@ const styles = StyleSheet.create({
   },
   editImageText: {
     fontSize: fontSizes.sm,
+  },
+  uploadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: borderRadius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  uploadingText: {
+    color: '#fff',
+    fontSize: fontSizes.sm,
+    fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -340,6 +473,12 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     color: '#999',
     fontFamily: 'Montserrat-Regular',
+  },
+  lastUpdatedText: {
+    fontSize: fontSizes.xs,
+    color: '#666',
+    fontFamily: 'Montserrat-Regular',
+    fontStyle: 'italic',
   },
   errorContainer: {
     alignItems: 'center',

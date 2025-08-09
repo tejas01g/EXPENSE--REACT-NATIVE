@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Dimensions,
   ScrollView,
   StatusBar,
 } from 'react-native';
@@ -19,17 +18,15 @@ import {
   spacing,
   padding,
   borderRadius,
-  imageSizes,
-  screenDimensions,
-  getResponsiveValue,
-  chartDimensions,
 } from './utils/responsive';
+import { useUserProfile } from './hooks/useUserProfile';
 
 const Analytics = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
   const [historicalData, setHistoricalData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { profileImageUrl } = useUserProfile();
 
   useEffect(() => {
     const q = query(
@@ -81,7 +78,6 @@ const Analytics = ({ navigation }) => {
   // Calculate additional stats
   const avgExpense = transactions.length > 0 ? totalBalance / transactions.length : 0;
   const highestExpense = transactions.length > 0 ? Math.max(...transactions.map(t => t.amount || 0)) : 0;
-  const lowestExpense = transactions.length > 0 ? Math.min(...transactions.map(t => t.amount || 0)) : 0;
 
   return (
     <View style={styles.container}>
@@ -99,7 +95,7 @@ const Analytics = ({ navigation }) => {
         >
           <Image
             source={{
-              uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop',
+              uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop',
             }}
             style={styles.profileImage}
           />
@@ -138,8 +134,8 @@ const Analytics = ({ navigation }) => {
                   ],
                   legend: ['Actual Expenses', 'AI Forecast'],
                 }}
-                width={chartDimensions.width}
-                height={chartDimensions.height}
+                width={scale(350)}
+                height={scale(220)}
                 yAxisSuffix="$"
                 chartConfig={{
                   backgroundColor: '#1a1a1a',
