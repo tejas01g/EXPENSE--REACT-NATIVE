@@ -6,11 +6,16 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  SafeAreaView,
+  useWindowDimensions,
+  Animated,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { auth, db } from '../src/firebaseConfig';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, doc, getDoc } from 'firebase/firestore';
+import { useUserProfile } from './hooks/useUserProfile';
+
 import {
   scale,
   verticalScale,
@@ -20,242 +25,160 @@ import {
   borderRadius,
   getResponsiveValue,
 } from './utils/responsive';
-import { useUserProfile } from './hooks/useUserProfile';
-import {
-  // collection,
-  // onSnapshot,
-  // query,
-  doc,
-  deleteDoc,
-  getDoc,
-} from 'firebase/firestore';
+
+// Reusable animation component using the built-in Animated API
+const AnimatedEntry = ({ children, delay = 0 }) => {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.delay(delay),
+      Animated.parallel([
+        Animated.timing(opacity, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: 0, duration: 600, useNativeDriver: true }),
+      ]),
+    ]).start();
+  }, []);
+
+  return <Animated.View style={{ opacity, transform: [{ translateY }] }}>{children}</Animated.View>;
+};
 
 const Home = ({ navigation }) => {
+  const { width, height } = useWindowDimensions();
+  const styles = createStyles(width, height);
+
   const [transactions, setTransactions] = useState([]);
   const { profileImageUrl, userName } = useUserProfile();
-    const currencySymbols = {
-    USD: '$',
-    EUR: '€',
-    GBP: '£',
-    INR: '₹',
-    CAD: 'C$',
-    AUD: 'A$',
-  };
-    const [currency, setCurrency] = useState('USD'); // default
+  const [currency, setCurrency] = useState('USD');
+  const currencySymbols = { USD: '$', EUR: '€', GBP: '£', INR: '₹', CAD: 'C$', AUD: 'A$' };
+  const [quote, setQuote] = useState('');
 
-
+  // Data fetching and other logic remains unchanged
   useEffect(() => {
     const userId = auth.currentUser?.uid;
     if (!userId) return;
 
-      const userRef = doc(db, 'users', userId);
-        getDoc(userRef).then(snap => {
-          if (snap.exists()) {
-            setCurrency(snap.data().currency || 'USD');
-          }
-        });
+    const userRef = doc(db, 'users', userId);
+    getDoc(userRef).then(snap => setCurrency(snap.exists() ? snap.data().currency || 'USD' : 'USD'));
 
     const q = query(collection(db, 'users', userId, 'transactions'));
     const unsubscribe = onSnapshot(q, querySnapshot => {
       const trans = [];
-      querySnapshot.forEach(doc => {
-        trans.push({ id: doc.id, ...doc.data() });
-      });
-      const sorted = trans.sort(
-        (a, b) => b.createdAt?.seconds - a.createdAt?.seconds,
-      );
-      setTransactions(sorted);
+      querySnapshot.forEach(doc => trans.push({ id: doc.id, ...doc.data() }));
+      setTransactions(trans.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds));
     });
-
     return () => unsubscribe();
   }, []);
 
-  const [quote, setQuote] = useState('');
   useEffect(() => {
     const quotes = [
-      'Save money, and money will save you.',
-      "Budgeting isn't limiting yourself. It's freedom.",
-      'Track your spending, not just your earnings.',
-      'Spend less than you earn—always.',
-      'Make your money work for you.',
-      'Avoid impulse buys—pause and plan.',
-      'Little savings grow big over time.',
-      'Stick to your budget, and build wealth.',
-      'Be mindful, not stingy.',
-      'Smart money = peaceful mind.',
+      'The best time to plant a tree was 20 years ago. The second best time is now.',
+      'An investment in knowledge pays the best interest.',
+      'Beware of little expenses. A small leak will sink a great ship.',
     ];
-
-    const getRandomQuote = () => {
-      const index = Math.floor(Math.random() * quotes.length);
-      setQuote(quotes[index]);
-    };
-
+    const getRandomQuote = () => setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
     getRandomQuote();
     const interval = setInterval(getRandomQuote, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  // Calculate total balance from transactions
-  const totalBalance = transactions.reduce((sum, transaction) => {
-    return sum + (transaction.amount || 0);
-  }, 0);
-
-  // Calculate progress percentage (example: based on monthly budget)
-  const monthlyBudget = 2000; // This could come from user settings
+  const totalBalance = transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+  const monthlyBudget = 2000;
   const progressPercentage = Math.min((totalBalance / monthlyBudget) * 100, 100);
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Home</Text>
-          <Text style={styles.headerSubtitle}>
-            Welcome back{userName ? `, ${userName}` : ''}!
-          </Text>
-        </View>
-        <TouchableOpacity 
-          style={styles.profileButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Image
-            source={{
-              uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format',
-            }}
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Balance Chart */}
-      <View style={styles.chartContainer}>
-        <AnimatedCircularProgress
-          size={getResponsiveValue(180, 200, 220, 250)}
-          width={scale(20)}
-          fill={progressPercentage}
-          tintColor="#00e0ff"
-          tintColorSecondary="#8e2de2"
-          backgroundColor="#2d2f4a"
-          arcSweepAngle={360}
-          rotation={135}
-          lineCap="round"
-        >
-          {() => (
-            <View style={styles.balanceContent}>
-              <Text style={styles.balanceAmount}>${totalBalance.toFixed(2)}</Text>
-              <Text style={styles.balanceLabel}>Available Balance</Text>
-              <Text style={styles.budgetProgress}>
-                {progressPercentage.toFixed(1)}% of budget
-              </Text>
-            </View>
-          )}
-        </AnimatedCircularProgress>
-      </View>
-
-      {/* Tip of the Day */}
-      <View style={styles.tipContainer}>
-        <View style={styles.tipHeader}>
-          <Text style={styles.tipIcon}>💡</Text>
-          <Text style={styles.tipTitle}>Tip of the day</Text>
-        </View>
-        <Text style={styles.tipText}>{quote}</Text>
-      </View>
-
-      {/* Quick Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{transactions.length}</Text>
-          <Text style={styles.statLabel}>Transactions</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>
-            {transactions.length > 0 
-              ? (totalBalance / transactions.length).toFixed(2) 
-              : '0.00'
-            }
-          </Text>
-          <Text style={styles.statLabel}>Avg. Expense</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>
-            ${(monthlyBudget - totalBalance).toFixed(2)}
-          </Text>
-          <Text style={styles.statLabel}>Remaining</Text>
-        </View>
-      </View>
-
-      {/* Expenses Header */}
-      <View style={styles.expensesHeader}>
-        <Text style={styles.expensesTitle}>Recent Expenses</Text>
-        <TouchableOpacity 
-          style={styles.viewAllButton}
-          onPress={() => navigation.navigate('Analytics')}
-        >
-          <Text style={styles.viewAllText}>View All</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Transactions List */}
-      <ScrollView 
-        style={styles.transactionsList}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.transactionsContent}
-      >
-        {Array.isArray(transactions) && transactions.length > 0 ? (
-          transactions.slice(0, 5).map(item => (
-            <View style={styles.transactionItem} key={item.id}>
-              <View style={styles.transactionLeft}>
-                <Image
-                  style={styles.transactionIcon}
-                  source={{
-                    uri:
-                      item.image ||
-                      'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format',
-                  }}
-                />
-                <View style={styles.transactionInfo}>
-                  <Text style={styles.transactionCategory}>
-                    {item.category || 'No Category'}
-                  </Text>
-                  <Text style={styles.transactionDate}>
-                    {item.date
-                      ? new Date(item.date.seconds * 1000).toLocaleDateString()
-                      : 'No Date'}
-                  </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#000" />
+        
+        {/* --- 1. NON-SCROLLING CONTENT --- */}
+        <View>
+            <AnimatedEntry delay={100}>
+                <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                        <Text style={styles.headerTitle}>Dashboard</Text>
+                        <Text style={styles.headerSubtitle}>Welcome back{userName ? `, ${userName}` : ''}!</Text>
+                    </View>
+                    <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Profile')}>
+                        <Image
+                            source={{ uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format' }}
+                            style={styles.profileImage}
+                        />
+                    </TouchableOpacity>
                 </View>
-              </View>
-              <Text style={styles.transactionAmount}>
-                {currencySymbols[item.currency || currency]}
-                {item.amount ? item.amount.toFixed(2) : '0.00'}
-                {/* ${item.amount ? item.amount.toFixed(2) : '0.00'} */}
-              </Text>
-            </View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📊</Text>
-            <Text style={styles.emptyTitle}>No transactions yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Start tracking your expenses to see them here
-            </Text>
-            <TouchableOpacity 
-              style={styles.addFirstButton}
-              onPress={() => navigation.navigate('Add')}
-            >
-              <Text style={styles.addFirstButtonText}>Add Your First Expense</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </ScrollView>
-    </View>
+            </AnimatedEntry>
+
+            <AnimatedEntry delay={200}>
+                <View style={styles.chartContainer}>
+                    <AnimatedCircularProgress
+                        size={getResponsiveValue(180, 200, 220, 250)}
+                        width={scale(18)}
+                        fill={progressPercentage}
+                        tintColor="#00e0ff"
+                        tintColorSecondary="#8e2de2"
+                        backgroundColor="rgba(255,255,255,0.1)"
+                        rotation={135}
+                        lineCap="round"
+                        duration={1000}
+                    >
+                        {() => (
+                            <View style={styles.balanceContent}>
+                                <Text style={styles.balanceAmount}>{currencySymbols[currency] || '$'}{totalBalance.toFixed(2)}</Text>
+                                <Text style={styles.balanceLabel}>Total Spent This Month</Text>
+                            </View>
+                        )}
+                    </AnimatedCircularProgress>
+                </View>
+            </AnimatedEntry>
+
+            {/* The Tip and Stats containers can also be part of the non-scrolling section if you prefer */}
+            {/* For this example, we keep the main dashboard fixed and scroll the rest */}
+
+        </View>
+
+        {/* --- 2. SCROLLING CONTENT --- */}
+        <View style={styles.scrollableContent}>
+            <AnimatedEntry delay={300}>
+                <View style={styles.expensesHeader}>
+                    <Text style={styles.expensesTitle}>Recent Activity</Text>
+                    <TouchableOpacity style={styles.viewAllButton} onPress={() => navigation.navigate('Expense')}>
+                        <Text style={styles.viewAllText}>View All</Text>
+                    </TouchableOpacity>
+                </View>
+            </AnimatedEntry>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {transactions.length > 0 ? (
+                    transactions.map((item, index) => (
+                        <AnimatedEntry key={item.id} delay={400 + index * 100}>
+                            <View style={styles.transactionItem}>
+                                <View style={styles.transactionLeft}><Image style={styles.transactionIcon} source={{ uri: item.image || 'https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?q=80&w=1490&auto=format' }}/><View style={styles.transactionInfo}><Text style={styles.transactionCategory} numberOfLines={1}>{item.category || 'Uncategorized'}</Text><Text style={styles.transactionDate}>{item.date ? new Date(item.date.seconds * 1000).toLocaleDateString() : 'No Date'}</Text></View></View><Text style={styles.transactionAmount}>- {currencySymbols[item.currency || currency]}{item.amount ? item.amount.toFixed(2) : '0.00'}</Text>
+                            </View>
+                        </AnimatedEntry>
+                    ))
+                ) : (
+                    <AnimatedEntry delay={400}>
+                        <View style={styles.emptyState}>
+                            <Text style={styles.emptyIcon}>✨</Text><Text style={styles.emptyTitle}>All Clear!</Text><Text style={styles.emptySubtitle}>You have no recent transactions. Add one to get started.</Text><TouchableOpacity style={styles.addFirstButton} onPress={() => navigation.navigate('Add')}><Text style={styles.addFirstButtonText}>Add First Expense</Text></TouchableOpacity>
+                        </View>
+                    </AnimatedEntry>
+                )}
+            </ScrollView>
+        </View>
+
+      </View>
+    </SafeAreaView>
   );
 };
 
 export default Home;
 
-const styles = StyleSheet.create({
+const createStyles = (width, height) => StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   container: {
     flex: 1,
     backgroundColor: '#000',
@@ -265,21 +188,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: padding.lg,
-    paddingTop: verticalScale(60),
+    paddingTop: verticalScale(20),
     paddingBottom: spacing.lg,
-  },
-  headerLeft: {
-    flex: 1,
   },
   headerTitle: {
     fontSize: fontSizes['4xl'],
     color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    fontWeight: '600',
+    fontFamily: 'Montserrat-Bold',
+    textShadowColor: 'rgba(0, 224, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
   },
   headerSubtitle: {
     fontSize: fontSizes.base,
-    color: '#ccc',
+    color: '#aaa',
     fontFamily: 'Montserrat-Regular',
     marginTop: spacing.xs,
   },
@@ -287,9 +209,13 @@ const styles = StyleSheet.create({
     width: scale(50),
     height: scale(50),
     borderRadius: borderRadius.full,
-    borderWidth: scale(3),
-    borderColor: '#390cc1',
-    overflow: 'hidden',
+    borderWidth: scale(2),
+    borderColor: '#00e0ff',
+    shadowColor: '#00e0ff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 12,
   },
   profileImage: {
     width: '100%',
@@ -298,17 +224,25 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
+    // Reduced vertical padding as it's no longer in a scrollview
+    paddingBottom: spacing.xl, 
+    shadowColor: '#8e2de2',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
+    elevation: 15,
   },
   balanceContent: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   balanceAmount: {
-    fontSize: getResponsiveValue(fontSizes.xl, fontSizes['2xl'], fontSizes['3xl'], fontSizes['4xl']),
-    fontFamily: 'Montserrat-SemiBold',
+    fontSize: getResponsiveValue(fontSizes['2xl'], fontSizes['3xl'], fontSizes['4xl']),
+    fontFamily: 'Montserrat-Bold',
     color: '#fff',
-    fontWeight: '600',
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   balanceLabel: {
     fontSize: fontSizes.sm,
@@ -316,102 +250,28 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
     marginTop: spacing.xs,
   },
-  budgetProgress: {
-    fontSize: fontSizes.xs,
-    color: '#888',
-    fontFamily: 'Montserrat-Regular',
-    marginTop: spacing.xs,
-  },
-  tipContainer: {
-    backgroundColor: 'rgba(57, 12, 193, 0.1)',
-    marginHorizontal: padding.lg,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(57, 12, 193, 0.3)',
-    marginBottom: spacing.xl,
-  },
-  tipHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  tipIcon: {
-    fontSize: fontSizes.lg,
-    marginRight: spacing.sm,
-  },
-  tipTitle: {
-    fontSize: fontSizes.base,
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-  },
-  tipText: {
-    fontSize: fontSizes.base,
-    color: '#fff',
-    fontFamily: 'Montserrat-Regular',
-    lineHeight: fontSizes.base * 1.4,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: padding.lg,
-    marginBottom: spacing.xl,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginHorizontal: spacing.xs,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  statValue: {
-    fontSize: fontSizes.lg,
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    fontWeight: '600',
-  },
-  statLabel: {
-    fontSize: fontSizes.xs,
-    color: '#ccc',
-    fontFamily: 'Montserrat-Regular',
-    marginTop: spacing.xs,
-    textAlign: 'center',
+  
+  // --- Scrollable Area Styles ---
+  scrollableContent: {
+      flex: 1, // This is crucial, it makes this view take up all remaining space
+      paddingHorizontal: padding.lg,
   },
   expensesHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: padding.lg,
     marginBottom: spacing.md,
+    paddingTop: spacing.sm, 
   },
   expensesTitle: {
     fontSize: fontSizes['2xl'],
     color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    fontWeight: '600',
-  },
-  viewAllButton: {
-    backgroundColor: 'rgba(57, 12, 193, 0.2)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(57, 12, 193, 0.3)',
+    fontFamily: 'Montserrat-Bold',
   },
   viewAllText: {
     fontSize: fontSizes.sm,
     color: '#00e0ff',
-    fontFamily: 'Montserrat-Regular',
-  },
-  transactionsList: {
-    flex: 1,
-  },
-  transactionsContent: {
-    paddingHorizontal: padding.lg,
-    paddingBottom: spacing.xl,
+    fontFamily: 'Montserrat-SemiBold',
   },
   transactionItem: {
     flexDirection: 'row',
@@ -422,71 +282,37 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
-  transactionLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  transactionIcon: {
-    width: scale(40),
-    height: scale(40),
-    borderRadius: borderRadius.full,
-    marginRight: spacing.md,
-  },
-  transactionInfo: {
-    flex: 1,
-  },
-  transactionCategory: {
-    fontSize: fontSizes.base,
-    color: '#fff',
-    fontFamily: 'Montserrat-Regular',
-    fontWeight: '500',
-  },
-  transactionDate: {
-    fontSize: fontSizes.sm,
-    color: '#ccc',
-    fontFamily: 'Montserrat-Regular',
-    marginTop: spacing.xs,
-  },
-  transactionAmount: {
-    fontSize: fontSizes.base,
-    color: '#ff6b6b',
-    fontFamily: 'Montserrat-SemiBold',
-    fontWeight: '600',
-  },
+  transactionLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: spacing.sm },
+  transactionIcon: { width: scale(40), height: scale(40), borderRadius: borderRadius.full, marginRight: spacing.md },
+  transactionInfo: { flex: 1 },
+  transactionCategory: { fontSize: fontSizes.base, color: '#fff', fontFamily: 'Montserrat-SemiBold' },
+  transactionDate: { fontSize: fontSizes.sm, color: '#ccc', fontFamily: 'Montserrat-Regular', marginTop: spacing.xs },
+  transactionAmount: { fontSize: fontSizes.base, color: '#ff6b6b', fontFamily: 'Montserrat-Bold' },
   emptyState: {
     alignItems: 'center',
     paddingVertical: spacing['3xl'],
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    marginTop: spacing.lg,
   },
-  emptyIcon: {
-    fontSize: scale(48),
-    marginBottom: spacing.lg,
-  },
-  emptyTitle: {
-    fontSize: fontSizes.xl,
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: fontSizes.base,
-    color: '#ccc',
-    fontFamily: 'Montserrat-Regular',
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
-  },
+  emptyIcon: { fontSize: scale(48), marginBottom: spacing.lg },
+  emptyTitle: { fontSize: fontSizes.xl, color: '#fff', fontFamily: 'Montserrat-Bold', marginBottom: spacing.sm },
+  emptySubtitle: { fontSize: fontSizes.base, color: '#ccc', fontFamily: 'Montserrat-Regular', textAlign: 'center', marginBottom: spacing.xl, paddingHorizontal: spacing.lg },
   addFirstButton: {
-    backgroundColor: '#390cc1',
+    backgroundColor: '#00e0ff',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.full,
+    shadowColor: '#00e0ff',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+    elevation: 10,
   },
-  addFirstButtonText: {
-    fontSize: fontSizes.base,
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-  },
+  addFirstButtonText: { fontSize: fontSizes.base, color: '#000', fontFamily: 'Montserrat-Bold' },
 });
