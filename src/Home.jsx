@@ -21,14 +21,39 @@ import {
   getResponsiveValue,
 } from './utils/responsive';
 import { useUserProfile } from './hooks/useUserProfile';
+import {
+  // collection,
+  // onSnapshot,
+  // query,
+  doc,
+  deleteDoc,
+  getDoc,
+} from 'firebase/firestore';
 
 const Home = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
   const { profileImageUrl, userName } = useUserProfile();
+    const currencySymbols = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    INR: '₹',
+    CAD: 'C$',
+    AUD: 'A$',
+  };
+    const [currency, setCurrency] = useState('USD'); // default
+
 
   useEffect(() => {
     const userId = auth.currentUser?.uid;
     if (!userId) return;
+
+      const userRef = doc(db, 'users', userId);
+        getDoc(userRef).then(snap => {
+          if (snap.exists()) {
+            setCurrency(snap.data().currency || 'USD');
+          }
+        });
 
     const q = query(collection(db, 'users', userId, 'transactions'));
     const unsubscribe = onSnapshot(q, querySnapshot => {
@@ -146,7 +171,7 @@ const Home = ({ navigation }) => {
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>
-            ${transactions.length > 0 
+            {transactions.length > 0 
               ? (totalBalance / transactions.length).toFixed(2) 
               : '0.00'
             }
@@ -202,7 +227,9 @@ const Home = ({ navigation }) => {
                 </View>
               </View>
               <Text style={styles.transactionAmount}>
-                ${item.amount ? item.amount.toFixed(2) : '0.00'}
+                {currencySymbols[item.currency || currency]}
+                {item.amount ? item.amount.toFixed(2) : '0.00'}
+                {/* ${item.amount ? item.amount.toFixed(2) : '0.00'} */}
               </Text>
             </View>
           ))

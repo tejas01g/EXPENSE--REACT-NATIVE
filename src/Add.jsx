@@ -40,6 +40,15 @@ const Add = ({ navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { profileImageUrl } = useUserProfile();
 
+  const currencySymbols = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    INR: '₹',
+    CAD: 'C$',
+    AUD: 'A$',
+  };
+
   const handleAddExpense = async () => {
     if (!category || !amount || !currency || !payment) {
       Alert.alert('Missing Information', 'Please fill all required fields');
@@ -85,7 +94,7 @@ const Add = ({ navigation }) => {
     }
   };
 
-  const formatDate = (dateToFormat) => {
+  const formatDate = dateToFormat => {
     return dateToFormat.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -94,7 +103,7 @@ const Add = ({ navigation }) => {
     });
   };
 
-  const formatTime = (dateToFormat) => {
+  const formatTime = dateToFormat => {
     return dateToFormat.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -110,25 +119,27 @@ const Add = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      
+
       {/* Enhanced Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Add Expense</Text>
           <Text style={styles.headerSubtitle}>Track your spending</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.profileButton}
           onPress={() => navigation.navigate('Profile')}
         >
           <Image
             source={{
-              uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d',
+              uri:
+                profileImageUrl ||
+                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d',
             }}
             style={styles.profileImage}
           />
@@ -146,15 +157,15 @@ const Add = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Transaction Details</Text>
           <View style={styles.dateTimeContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.dateTimeButton}
               onPress={() => setShowDatePicker(true)}
             >
               <Text style={styles.dateTimeLabel}>📅 Date</Text>
               <Text style={styles.dateTimeValue}>{formatDate(date)}</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.dateTimeButton}
               onPress={() => setShowTimePicker(true)}
             >
@@ -181,7 +192,10 @@ const Add = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Amount</Text>
           <View style={styles.amountContainer}>
-            <Text style={styles.currencySymbol}>$</Text>
+            <Text style={styles.currencySymbol}>
+              {currency ? currencySymbols[currency] : '$'}
+            </Text>
+            {/* <Text style={styles.currencySymbol}>$</Text> */}
             <TextInput
               style={styles.amountInput}
               placeholder="0.00"
@@ -247,19 +261,28 @@ const Add = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Categories</Text>
           <View style={styles.quickCategories}>
-            {['Food', 'Transport', 'Shopping', 'Entertainment', 'Bills', 'Health'].map((cat) => (
+            {[
+              'Food',
+              'Transport',
+              'Shopping',
+              'Entertainment',
+              'Bills',
+              'Health',
+            ].map(cat => (
               <TouchableOpacity
                 key={cat}
                 style={[
                   styles.quickCategoryButton,
-                  category === cat && styles.quickCategoryButtonActive
+                  category === cat && styles.quickCategoryButtonActive,
                 ]}
                 onPress={() => setCategory(cat)}
               >
-                <Text style={[
-                  styles.quickCategoryText,
-                  category === cat && styles.quickCategoryTextActive
-                ]}>
+                <Text
+                  style={[
+                    styles.quickCategoryText,
+                    category === cat && styles.quickCategoryTextActive,
+                  ]}
+                >
                   {cat}
                 </Text>
               </TouchableOpacity>
@@ -270,11 +293,8 @@ const Add = ({ navigation }) => {
 
       {/* Enhanced Add Button */}
       <View style={[styles.buttonContainer, { bottom: getBottomPosition() }]}>
-        <TouchableOpacity 
-          style={[
-            styles.addButton,
-            isSubmitting && styles.addButtonDisabled
-          ]} 
+        <TouchableOpacity
+          style={[styles.addButton, isSubmitting && styles.addButtonDisabled]}
           onPress={handleAddExpense}
           disabled={isSubmitting}
         >
@@ -386,7 +406,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   sectionTitle: {
-    fontSize: getResponsiveValue(fontSizes.lg, fontSizes.xl, fontSizes.xl, fontSizes['2xl']),
+    fontSize: getResponsiveValue(
+      fontSizes.lg,
+      fontSizes.xl,
+      fontSizes.xl,
+      fontSizes['2xl'],
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     marginBottom: spacing.md,
@@ -405,14 +430,24 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   dateTimeLabel: {
-    fontSize: getResponsiveValue(fontSizes.sm, fontSizes.base, fontSizes.base, fontSizes.lg),
+    fontSize: getResponsiveValue(
+      fontSizes.sm,
+      fontSizes.base,
+      fontSizes.base,
+      fontSizes.lg,
+    ),
     color: '#ccc',
     fontFamily: 'Montserrat-Regular',
     marginBottom: spacing.xs,
     letterSpacing: 0.3,
   },
   dateTimeValue: {
-    fontSize: getResponsiveValue(fontSizes.base, fontSizes.lg, fontSizes.lg, fontSizes.xl),
+    fontSize: getResponsiveValue(
+      fontSizes.base,
+      fontSizes.lg,
+      fontSizes.lg,
+      fontSizes.xl,
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     letterSpacing: 0.3,
@@ -421,7 +456,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
-    fontSize: getResponsiveValue(fontSizes.base, fontSizes.lg, fontSizes.lg, fontSizes.xl),
+    fontSize: getResponsiveValue(
+      fontSizes.base,
+      fontSizes.lg,
+      fontSizes.lg,
+      fontSizes.xl,
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
     borderWidth: 1,
@@ -438,7 +478,12 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   currencySymbol: {
-    fontSize: getResponsiveValue(fontSizes['2xl'], fontSizes['3xl'], fontSizes['3xl'], fontSizes['4xl']),
+    fontSize: getResponsiveValue(
+      fontSizes['2xl'],
+      fontSizes['3xl'],
+      fontSizes['3xl'],
+      fontSizes['4xl'],
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     marginRight: spacing.sm,
@@ -446,7 +491,12 @@ const styles = StyleSheet.create({
   },
   amountInput: {
     flex: 1,
-    fontSize: getResponsiveValue(fontSizes['2xl'], fontSizes['3xl'], fontSizes['3xl'], fontSizes['4xl']),
+    fontSize: getResponsiveValue(
+      fontSizes['2xl'],
+      fontSizes['3xl'],
+      fontSizes['3xl'],
+      fontSizes['4xl'],
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     paddingVertical: spacing.lg,
@@ -460,7 +510,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   pickerInput: {
-    fontSize: getResponsiveValue(fontSizes.base, fontSizes.lg, fontSizes.lg, fontSizes.xl),
+    fontSize: getResponsiveValue(
+      fontSizes.base,
+      fontSizes.lg,
+      fontSizes.lg,
+      fontSizes.xl,
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
     padding: spacing.lg,
@@ -484,7 +539,12 @@ const styles = StyleSheet.create({
     borderColor: '#390cc1',
   },
   quickCategoryText: {
-    fontSize: getResponsiveValue(fontSizes.sm, fontSizes.base, fontSizes.base, fontSizes.lg),
+    fontSize: getResponsiveValue(
+      fontSizes.sm,
+      fontSizes.base,
+      fontSizes.base,
+      fontSizes.lg,
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
     letterSpacing: 0.3,
@@ -518,7 +578,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
   },
   addButtonText: {
-    fontSize: getResponsiveValue(fontSizes.lg, fontSizes.xl, fontSizes.xl, fontSizes['2xl']),
+    fontSize: getResponsiveValue(
+      fontSizes.lg,
+      fontSizes.xl,
+      fontSizes.xl,
+      fontSizes['2xl'],
+    ),
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     fontWeight: '600',

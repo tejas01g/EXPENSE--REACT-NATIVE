@@ -6769,10 +6769,10 @@ react-native-picker-select@^9.3.1:
     lodash.isequal "^4.5.0"
     lodash.isobject "^3.0.2"
 
-react-native-reanimated@^3.18.0:
-  version "3.18.0"
-  resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.18.0.tgz"
-  integrity sha512-eVcNcqeOkMW+BUWAHdtvN3FKgC8J8wiEJkX6bNGGQaLS7m7e4amTfjIcqf/Ta+lerZLurmDaQ0lICI1CKPrb1Q==
+react-native-reanimated@^3.19.1:
+  version "3.19.1"
+  resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.19.1.tgz"
+  integrity sha512-ILL0FSNzSVIg6WuawrsMBvNxk2yJFiTUcahimXDAeNiE/09eagVUlHhYWXAAmH0umvAOafBaGjO7YfBhUrf5ZQ==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
     "@babel/plugin-transform-class-properties" "^7.0.0-0"

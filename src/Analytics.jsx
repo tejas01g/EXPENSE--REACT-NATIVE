@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { LineChart } from 'react-native-chart-kit';
 import { auth, db } from '../src/firebaseConfig';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, getDoc, doc } from 'firebase/firestore';
 import {
   scale,
   verticalScale,
@@ -28,9 +28,33 @@ const Analytics = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { profileImageUrl } = useUserProfile();
 
+  const currencySymbols = {
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    INR: '₹',
+    CAD: 'C$',
+    AUD: 'A$',
+  };
+
+  const [currency, setCurrency] = useState('USD'); // default
+  const activeSymbol = currencySymbols[currency] || '$';
+
   useEffect(() => {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    // Get user's preferred currency
+    const userRef = doc(db, 'users', userId);
+    getDoc(userRef).then(snap => {
+      if (snap.exists()) {
+        setCurrency(snap.data().currency || 'USD');
+      }
+    });
+
+    // Listen to transactions
     const q = query(
-      collection(db, 'users', auth.currentUser.uid, 'transactions'),
+      collection(db, 'users', userId, 'transactions'),
       orderBy('createdAt', 'desc')
     );
 
@@ -48,7 +72,9 @@ const Analytics = ({ navigation }) => {
       // Group by date
       const dailySums = {};
       trans.forEach(item => {
-        const dateKey = new Date(item.date?.seconds * 1000).toLocaleDateString();
+        const dateKey = item.date
+          ? new Date(item.date.seconds * 1000).toLocaleDateString()
+          : 'Unknown';
         dailySums[dateKey] = (dailySums[dateKey] || 0) + Number(item.amount || 0);
       });
 
@@ -75,34 +101,37 @@ const Analytics = ({ navigation }) => {
   );
   const actualPlusPredicted = [...historicalData, ...predictedData];
 
-  // Calculate additional stats
+  // Stats
   const avgExpense = transactions.length > 0 ? totalBalance / transactions.length : 0;
-  const highestExpense = transactions.length > 0 ? Math.max(...transactions.map(t => t.amount || 0)) : 0;
+  const highestExpense =
+    transactions.length > 0 ? Math.max(...transactions.map(t => t.amount || 0)) : 0;
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Analytics</Text>
           <Text style={styles.headerSubtitle}>Your spending insights</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.profileButton}
           onPress={() => navigation.navigate('Profile')}
         >
           <Image
             source={{
-              uri: profileImageUrl || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop',
+              uri:
+                profileImageUrl ||
+                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop',
             }}
             style={styles.profileImage}
           />
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -136,7 +165,7 @@ const Analytics = ({ navigation }) => {
                 }}
                 width={scale(350)}
                 height={scale(220)}
-                yAxisSuffix="$"
+                yAxisSuffix={activeSymbol}
                 chartConfig={{
                   backgroundColor: '#1a1a1a',
                   backgroundGradientFrom: '#1a1a1a',
@@ -166,7 +195,9 @@ const Analytics = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Summary</Text>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryValue}>${totalBalance.toFixed(2)}</Text>
+              <Text style={styles.summaryValue}>
+                {activeSymbol}{totalBalance.toFixed(2)}
+              </Text>
               <Text style={styles.summaryLabel}>Total Spending</Text>
             </View>
             <View style={styles.summaryCard}>
@@ -174,11 +205,15 @@ const Analytics = ({ navigation }) => {
               <Text style={styles.summaryLabel}>Transactions</Text>
             </View>
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryValue}>${avgExpense.toFixed(2)}</Text>
+              <Text style={styles.summaryValue}>
+                {activeSymbol}{avgExpense.toFixed(2)}
+              </Text>
               <Text style={styles.summaryLabel}>Average</Text>
             </View>
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryValue}>${highestExpense.toFixed(2)}</Text>
+              <Text style={styles.summaryValue}>
+                {activeSymbol}{highestExpense.toFixed(2)}
+              </Text>
               <Text style={styles.summaryLabel}>Highest</Text>
             </View>
           </View>
@@ -210,7 +245,7 @@ const Analytics = ({ navigation }) => {
                   </View>
                   <View style={styles.breakdownRight}>
                     <Text style={styles.breakdownAmount}>
-                      ${item.amount ? item.amount.toFixed(2) : '0.00'}
+                      {activeSymbol}{item.amount ? item.amount.toFixed(2) : '0.00'}
                     </Text>
                     <Text style={styles.breakdownPercentage}>
                       {((item.amount / totalBalance) * 100).toFixed(1)}%
@@ -238,23 +273,21 @@ const Analytics = ({ navigation }) => {
               <Text style={styles.insightIcon}>💡</Text>
               <Text style={styles.insightTitle}>Spending Pattern</Text>
               <Text style={styles.insightText}>
-                {transactions.length > 0 
-                  ? `You've spent an average of $${avgExpense.toFixed(2)} per transaction`
-                  : 'Start tracking expenses to see insights'
-                }
+                {transactions.length > 0
+                  ? `You've spent an average of ${activeSymbol}${avgExpense.toFixed(2)} per transaction`
+                  : 'Start tracking expenses to see insights'}
               </Text>
             </View>
-            
+
             <View style={styles.insightCard}>
               <Text style={styles.insightIcon}>📈</Text>
               <Text style={styles.insightTitle}>Trend Analysis</Text>
               <Text style={styles.insightText}>
-                {historicalData.length > 1 
+                {historicalData.length > 1
                   ? historicalData[historicalData.length - 1] > historicalData[0]
                     ? 'Your spending is trending upward'
                     : 'Your spending is trending downward'
-                  : 'Add more data to see trends'
-                }
+                  : 'Add more data to see trends'}
               </Text>
             </View>
           </View>
