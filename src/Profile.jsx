@@ -216,7 +216,14 @@ const Profile = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+      
+      {/* Background Elements */}
+      <View style={styles.backgroundElements}>
+        <View style={[styles.circle, styles.circle1]} />
+        <View style={[styles.circle, styles.circle2]} />
+        <View style={[styles.circle, styles.circle3]} />
+      </View>
       
       <ScrollView 
         style={styles.scrollView}
@@ -225,64 +232,82 @@ const Profile = ({ navigation }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <View>
+            <Text style={styles.greeting}>Welcome back,</Text>
+            <Text style={styles.userGreetingName}>
+              {userInfo?.name?.split(' ')[0] || 'User'}
+            </Text>
+          </View>
           <TouchableOpacity style={styles.settingsButton}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
+            <View style={styles.settingsButtonInner}>
+              <Text style={styles.settingsIcon}>⚙️</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
-        {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <TouchableOpacity 
-            onPress={openGallery} 
-            style={styles.profileImageContainer}
-            disabled={isUploading}
-          >
-            <Image
-              source={{
-                uri: imageUri
-                  ? imageUri
-                  : 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80',
-              }}
-              style={styles.profileImage}
-            />
-            <View style={styles.editImageOverlay}>
-              {isUploading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.editImageText}>📷</Text>
-              )}
-            </View>
-            {isUploading && (
-              <View style={styles.uploadingOverlay}>
-                <ActivityIndicator size="large" color="#390cc1" />
-                <Text style={styles.uploadingText}>Uploading...</Text>
+        {/* Profile Card */}
+        <View style={styles.profileCard}>
+          {/* Profile Section */}
+          <View style={styles.profileSection}>
+            <TouchableOpacity 
+              onPress={openGallery} 
+              style={styles.profileImageContainer}
+              disabled={isUploading}
+            >
+              <View style={styles.imageBorder}>
+                <Image
+                  source={{
+                    uri: imageUri
+                      ? imageUri
+                      : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000',
+                  }}
+                  style={styles.profileImage}
+                />
+              </View>
+              
+              <View style={styles.editImageButton}>
+                {isUploading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.editIcon}>📷</Text>
+                )}
+              </View>
+            </TouchableOpacity>
+
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#6366f1" />
+                <Text style={styles.loadingText}>Loading profile...</Text>
+              </View>
+            ) : userInfo ? (
+              <View style={styles.userInfoContainer}>
+                <Text style={styles.userName}>{userInfo.name || 'User Name'}</Text>
+                <Text style={styles.userEmail}>{userInfo.email || 'user@email.com'}</Text>
+                
+                <View style={styles.userDetails}>
+                  {userInfo.dob && (
+                    <View style={styles.detailItem}>
+                      <Text style={styles.detailIcon}>🎂</Text>
+                      <Text style={styles.detailText}>{userInfo.dob}</Text>
+                    </View>
+                  )}
+                  {userInfo.profileImageUpdatedAt && (
+                    <View style={styles.detailItem}>
+                      <Text style={styles.detailIcon}>🔄</Text>
+                      <Text style={styles.detailText}>
+                        Updated {new Date(userInfo.profileImageUpdatedAt.toDate()).toLocaleDateString()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            ) : (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorIcon}>⚠️</Text>
+                <Text style={styles.errorText}>Failed to load profile</Text>
               </View>
             )}
-          </TouchableOpacity>
-
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Loading profile...</Text>
-            </View>
-          ) : userInfo ? (
-            <View style={styles.userInfoContainer}>
-              <Text style={styles.userName}>{userInfo.name || 'User Name'}</Text>
-              <Text style={styles.userEmail}>{userInfo.email || 'user@email.com'}</Text>
-              {userInfo.dob && (
-                <Text style={styles.userDOB}>🎂 {userInfo.dob}</Text>
-              )}
-              {userInfo.profileImageUpdatedAt && (
-                <Text style={styles.lastUpdatedText}>
-                  Profile updated: {new Date(userInfo.profileImageUpdatedAt.toDate()).toLocaleDateString()}
-                </Text>
-              )}
-            </View>
-          ) : (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>Failed to load profile</Text>
-            </View>
-          )}
+          </View>
         </View>
 
         {/* Stats Section */}
@@ -290,14 +315,25 @@ const Profile = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Your Statistics</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
+              <View style={styles.statIconContainer}>
+                <Text style={styles.statIcon}>💰</Text>
+              </View>
               <Text style={styles.statValue}>${stats.totalExpenses.toFixed(2)}</Text>
               <Text style={styles.statLabel}>Total Expenses</Text>
             </View>
+            
             <View style={styles.statCard}>
+              <View style={styles.statIconContainer}>
+                <Text style={styles.statIcon}>📈</Text>
+              </View>
               <Text style={styles.statValue}>${stats.avgExpense.toFixed(2)}</Text>
               <Text style={styles.statLabel}>Avg. Expense</Text>
             </View>
+            
             <View style={styles.statCard}>
+              <View style={styles.statIconContainer}>
+                <Text style={styles.statIcon}>🔄</Text>
+              </View>
               <Text style={styles.statValue}>{stats.totalTransactions}</Text>
               <Text style={styles.statLabel}>Transactions</Text>
             </View>
@@ -309,16 +345,24 @@ const Profile = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionIcon}>✏️</Text>
-              <Text style={styles.actionText}>Edit Profile</Text>
+              <View style={styles.actionButtonInner}>
+                <Text style={styles.actionIcon}>✏️</Text>
+                <Text style={styles.actionText}>Edit Profile</Text>
+              </View>
             </TouchableOpacity>
+            
             <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionIcon}>📊</Text>
-              <Text style={styles.actionText}>View Reports</Text>
+              <View style={styles.actionButtonInner}>
+                <Text style={styles.actionIcon}>📊</Text>
+                <Text style={styles.actionText}>View Reports</Text>
+              </View>
             </TouchableOpacity>
+            
             <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionIcon}>🔔</Text>
-              <Text style={styles.actionText}>Notifications</Text>
+              <View style={styles.actionButtonInner}>
+                <Text style={styles.actionIcon}>🔔</Text>
+                <Text style={styles.actionText}>Notifications</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -328,32 +372,49 @@ const Profile = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Support</Text>
           <View style={styles.supportLinks}>
             <TouchableOpacity style={styles.supportLink}>
-              <Text style={styles.supportIcon}>📞</Text>
-              <Text style={styles.supportText}>Contact Us</Text>
+              <View style={styles.supportLinkInner}>
+                <Text style={styles.supportIcon}>📞</Text>
+                <Text style={styles.supportText}>Contact Us</Text>
+                <Text style={styles.supportArrow}>➔</Text>
+              </View>
             </TouchableOpacity>
+            
             <TouchableOpacity style={styles.supportLink}>
-              <Text style={styles.supportIcon}>ℹ️</Text>
-              <Text style={styles.supportText}>About Us</Text>
+              <View style={styles.supportLinkInner}>
+                <Text style={styles.supportIcon}>ℹ️</Text>
+                <Text style={styles.supportText}>About Us</Text>
+                <Text style={styles.supportArrow}>➔</Text>
+              </View>
             </TouchableOpacity>
+            
             <TouchableOpacity style={styles.supportLink}>
-              <Text style={styles.supportIcon}>🐛</Text>
-              <Text style={styles.supportText}>Report a Problem</Text>
+              <View style={styles.supportLinkInner}>
+                <Text style={styles.supportIcon}>🐛</Text>
+                <Text style={styles.supportText}>Report a Problem</Text>
+                <Text style={styles.supportArrow}>➔</Text>
+              </View>
             </TouchableOpacity>
+            
             <TouchableOpacity style={styles.supportLink}>
-              <Text style={styles.supportIcon}>📖</Text>
-              <Text style={styles.supportText}>Help & FAQ</Text>
+              <View style={styles.supportLinkInner}>
+                <Text style={styles.supportIcon}>📖</Text>
+                <Text style={styles.supportText}>Help & FAQ</Text>
+                <Text style={styles.supportArrow}>➔</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutIcon}>🚪</Text>
-          <Text style={styles.logoutText}>Logout</Text>
+          <View style={styles.logoutButtonInner}>
+            <Text style={styles.logoutIcon}>🚪</Text>
+            <Text style={styles.logoutText}>Logout</Text>
+          </View>
         </TouchableOpacity>
 
         {/* App Version */}
-        <Text style={styles.versionText}>Version 1.0.0</Text>
+        <Text style={styles.versionText}>Version 1.0.0 • Expense Tracker Pro</Text>
       </ScrollView>
     </View>
   );
@@ -364,86 +425,135 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#0a0a0a',
+  },
+  // backgroundElements: {
+  //   position: 'absolute',
+  //   top: 0,
+  //   left: 0,
+  //   right: 0,
+  //   bottom: 0,
+  //   zIndex: 0,
+  // },
+  circle: {
+    position: 'absolute',
+    borderRadius: borderRadius.full,
+  },
+  circle1: {
+    width: scale(300),
+    height: scale(300),
+    backgroundColor: 'rgba(99, 102, 241, 0.03)',
+    top: -scale(100),
+    right: -scale(100),
+  },
+  circle2: {
+    width: scale(200),
+    height: scale(200),
+    backgroundColor: 'rgba(139, 92, 246, 0.03)',
+    bottom: scale(100),
+    left: -scale(100),
+  },
+  circle3: {
+    width: scale(150),
+    height: scale(150),
+    backgroundColor: 'rgba(99, 102, 241, 0.02)',
+    top: '40%',
+    right: scale(50),
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingBottom: verticalScale(50),
+    zIndex: 1,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: padding.lg,
     paddingTop: verticalScale(60),
     paddingBottom: spacing.lg,
   },
-  headerTitle: {
-    fontSize: fontSizes['4xl'],
+  greeting: {
+    fontSize: fontSizes.lg,
+    color: '#aaa',
+    fontFamily: 'Montserrat-Regular',
+    marginBottom: spacing.xs,
+  },
+  userGreetingName: {
+    fontSize: fontSizes['3xl'],
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     fontWeight: '600',
   },
   settingsButton: {
-    width: scale(40),
-    height: scale(40),
+    width: scale(44),
+    height: scale(44),
     borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  settingsButtonInner: {
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
   },
   settingsIcon: {
     fontSize: fontSizes.lg,
   },
+  profileCard: {
+    marginHorizontal: padding.lg,
+    borderRadius: borderRadius.xl,
+    padding: spacing.xl,
+    marginBottom: spacing.xl,
+    backgroundColor: 'rgba(26, 26, 26, 0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
+  },
   profileSection: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
   },
   profileImageContainer: {
     position: 'relative',
     marginBottom: spacing.lg,
   },
-  profileImage: {
+  imageBorder: {
     width: getResponsiveValue(scale(120), scale(140), scale(160), scale(180)),
     height: getResponsiveValue(scale(120), scale(140), scale(160), scale(180)),
     borderRadius: borderRadius.full,
-    borderWidth: scale(3),
-    borderColor: '#390cc1',
+    padding: scale(4),
+    backgroundColor: 'rgba(99, 102, 241, 0.2)',
   },
-  editImageOverlay: {
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.full,
+    backgroundColor: '#1a1a1a',
+  },
+  editImageButton: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    bottom: scale(4),
+    right: scale(4),
     width: scale(32),
     height: scale(32),
     borderRadius: borderRadius.full,
-    backgroundColor: '#390cc1',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#6366f1',
     borderWidth: scale(2),
-    borderColor: '#000',
+    borderColor: '#0a0a0a',
   },
-  editImageText: {
+  editIcon: {
     fontSize: fontSizes.sm,
-  },
-  uploadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: borderRadius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  uploadingText: {
-    color: '#fff',
-    fontSize: fontSizes.sm,
-    fontFamily: 'Montserrat-Regular',
-    marginTop: spacing.xs,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -453,39 +563,52 @@ const styles = StyleSheet.create({
     color: '#888',
     fontSize: fontSizes.base,
     fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
   },
   userInfoContainer: {
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   userName: {
     fontSize: fontSizes['2xl'],
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     fontWeight: '600',
+    textAlign: 'center',
   },
   userEmail: {
     fontSize: fontSizes.base,
-    color: '#ccc',
+    color: '#aaa',
     fontFamily: 'Montserrat-Regular',
+    textAlign: 'center',
   },
-  userDOB: {
+  userDetails: {
+    gap: spacing.xs,
+    alignItems: 'center',
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  detailIcon: {
     fontSize: fontSizes.sm,
-    color: '#999',
-    fontFamily: 'Montserrat-Regular',
   },
-  lastUpdatedText: {
-    fontSize: fontSizes.xs,
-    color: '#666',
+  detailText: {
+    fontSize: fontSizes.sm,
+    color: '#888',
     fontFamily: 'Montserrat-Regular',
-    fontStyle: 'italic',
   },
   errorContainer: {
     alignItems: 'center',
     paddingVertical: spacing.lg,
+    gap: spacing.xs,
+  },
+  errorIcon: {
+    fontSize: fontSizes.xl,
   },
   errorText: {
-    color: '#ff6b6b',
+    color: '#ef4444',
     fontSize: fontSizes.base,
     fontFamily: 'Montserrat-Regular',
   },
@@ -497,33 +620,47 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.xl,
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
+    letterSpacing: 0.5,
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   statCard: {
     flex: 1,
-    backgroundColor: 'rgba(57, 12, 193, 0.1)',
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     alignItems: 'center',
+    backgroundColor: 'rgba(99, 102, 241, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(57, 12, 193, 0.3)',
+    borderColor: 'rgba(99, 102, 241, 0.2)',
+  },
+  statIconContainer: {
+    marginBottom: spacing.sm,
+    width: scale(40),
+    height: scale(40),
+    borderRadius: borderRadius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+  },
+  statIcon: {
+    fontSize: fontSizes.lg,
   },
   statValue: {
     fontSize: fontSizes.lg,
     color: '#fff',
     fontFamily: 'Montserrat-SemiBold',
     fontWeight: '600',
+    marginBottom: spacing.xs,
   },
   statLabel: {
     fontSize: fontSizes.sm,
     color: '#ccc',
     fontFamily: 'Montserrat-Regular',
-    marginTop: spacing.xs,
+    opacity: 0.8,
   },
   actionsSection: {
     paddingHorizontal: padding.lg,
@@ -532,16 +669,20 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   actionButton: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  actionButtonInner: {
     padding: spacing.md,
     alignItems: 'center',
+    backgroundColor: 'rgba(99, 102, 241, 0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(99, 102, 241, 0.1)',
+    borderRadius: borderRadius.lg,
   },
   actionIcon: {
     fontSize: fontSizes.xl,
@@ -551,6 +692,8 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
+    marginTop: spacing.xs,
+    textAlign: 'center',
   },
   supportSection: {
     paddingHorizontal: padding.lg,
@@ -560,34 +703,45 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   supportLink: {
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  supportLinkInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
     padding: spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   supportIcon: {
     fontSize: fontSizes.lg,
     marginRight: spacing.md,
   },
   supportText: {
+    flex: 1,
     fontSize: fontSizes.base,
     color: '#fff',
     fontFamily: 'Montserrat-Regular',
   },
+  supportArrow: {
+    fontSize: fontSizes.lg,
+    color: '#666',
+  },
   logoutButton: {
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    marginHorizontal: padding.lg,
+    marginBottom: spacing.xl,
+  },
+  logoutButtonInner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderRadius: borderRadius.lg,
     padding: spacing.md,
-    marginHorizontal: padding.lg,
-    marginBottom: spacing.xl,
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.3)',
+    borderColor: 'rgba(239, 68, 68, 0.2)',
   },
   logoutIcon: {
     fontSize: fontSizes.lg,
@@ -595,7 +749,7 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: fontSizes.lg,
-    color: '#ff6b6b',
+    color: '#ef4444',
     fontFamily: 'Montserrat-SemiBold',
   },
   versionText: {
@@ -603,5 +757,6 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     color: '#666',
     fontFamily: 'Montserrat-Regular',
+    letterSpacing: 0.5,
   },
 });

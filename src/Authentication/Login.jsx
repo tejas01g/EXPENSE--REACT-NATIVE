@@ -21,15 +21,17 @@ import {
   padding,
   borderRadius,
 } from '../utils/responsive';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Missing Information', 'Please enter both email and password');
+      Alert.alert('Required', 'Please enter both email and password');
       return;
     }
 
@@ -41,11 +43,8 @@ const Login = ({ navigation }) => {
         email,
         password,
       );
-      const user = userCredential.user;
-      console.log('User logged in:', user.email);
       navigation.navigate('Main');
     } catch (error) {
-      console.log(error);
       let errorMessage = 'Login failed. Please try again.';
       
       if (error.code === 'auth/user-not-found') {
@@ -74,73 +73,102 @@ const Login = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
+        {/* Logo Section */}
         <View style={styles.header}>
-          <Text style={styles.logo}>💰</Text>
-          <Text style={styles.title}>Expense Tracker</Text>
-          <Text style={styles.subtitle}>Track your spending, save more</Text>
+          <View style={styles.logoContainer}>
+            <Icon name="wallet" size={scale(50)} color="#00E0FF" />
+          </View>
+          <Text style={styles.title}>Expensr</Text>
+          <Text style={styles.subtitle}>Sign in to continue</Text>
         </View>
 
         {/* Login Form */}
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>Welcome Back</Text>
-          <Text style={styles.formSubtitle}>Sign in to continue</Text>
-
+        <View style={styles.form}>
+          {/* Email Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Email Address</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor="#666"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={email}
-              onChangeText={setEmail}
-            />
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="email-outline" size={20} color="#666" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#666"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
           </View>
 
+          {/* Password Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              placeholderTextColor="#666"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={password}
-              onChangeText={setPassword}
-            />
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="lock-outline" size={20} color="#666" style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { flex: 1 }]}
+                placeholder="Enter your password"
+                placeholderTextColor="#666"
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity 
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeButton}
+              >
+                <Icon 
+                  name={showPassword ? "eye-off" : "eye"} 
+                  size={20} 
+                  color="#666" 
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
+          {/* Forgot Password */}
+          <TouchableOpacity 
+            style={styles.forgotPassword}
+            onPress={() => Alert.alert('Forgot Password', 'Use password reset feature in the app')}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          </TouchableOpacity>
+
+          {/* Login Button */}
           <TouchableOpacity
-            style={[
-              styles.loginButton,
-              isLoading && styles.loginButtonDisabled
-            ]}
+            style={[styles.loginButton, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}
           >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </Text>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <Icon name="loading" size={20} color="#FFF" style={styles.loadingIcon} />
+                <Text style={styles.buttonText}>Signing in...</Text>
+              </View>
+            ) : (
+              <>
+                <Icon name="login" size={20} color="#FFF" />
+                <Text style={styles.buttonText}>Sign In</Text>
+              </>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.forgotPassword}
-            onPress={() => Alert.alert('Forgot Password', 'Password reset feature coming soon!')}
-          >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
-        </View>
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.signupLink}>Sign Up</Text>
-          </TouchableOpacity>
+          {/* Sign Up Link */}
+          <View style={styles.signupContainer}>
+            <Text style={styles.signupText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+              <Text style={styles.signupLink}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -156,108 +184,132 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: padding.lg,
     paddingVertical: verticalScale(40),
+    justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: verticalScale(60),
+    marginBottom: verticalScale(50),
   },
-  logo: {
-    fontSize: scale(64),
+  logoContainer: {
+    width: scale(80),
+    height: scale(80),
+    borderRadius: scale(40),
+    backgroundColor: 'rgba(0, 224, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: spacing.lg,
   },
   title: {
-    fontSize: fontSizes['4xl'],
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    fontWeight: '600',
-    marginBottom: spacing.sm,
+    fontSize: fontSizes['3xl'],
+    color: '#FFF',
+    fontFamily: 'Montserrat-Bold',
+    marginBottom: spacing.xs,
   },
   subtitle: {
     fontSize: fontSizes.base,
-    color: '#ccc',
+    color: '#888',
     fontFamily: 'Montserrat-Regular',
-    textAlign: 'center',
   },
-  formContainer: {
-    marginBottom: verticalScale(40),
-  },
-  formTitle: {
-    fontSize: fontSizes['3xl'],
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    marginBottom: spacing.xs,
-  },
-  formSubtitle: {
-    fontSize: fontSizes.base,
-    color: '#ccc',
-    fontFamily: 'Montserrat-Regular',
-    marginBottom: spacing.xl,
+  form: {
+    width: '100%',
   },
   inputContainer: {
     marginBottom: spacing.lg,
   },
-  inputLabel: {
+  label: {
     fontSize: fontSizes.base,
-    color: '#fff',
-    fontFamily: 'Montserrat-Regular',
+    color: '#FFF',
+    fontFamily: 'Montserrat-SemiBold',
     marginBottom: spacing.sm,
   },
-  input: {
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    fontSize: fontSizes.base,
-    color: '#fff',
-    fontFamily: 'Montserrat-Regular',
+    borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  loginButton: {
-    backgroundColor: '#390cc1',
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-    elevation: 5,
-    shadowColor: '#390cc1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+  inputIcon: {
+    marginLeft: spacing.md,
   },
-  loginButtonDisabled: {
-    backgroundColor: '#666',
-  },
-  loginButtonText: {
-    fontSize: fontSizes.lg,
-    color: '#fff',
-    fontFamily: 'Montserrat-SemiBold',
-    fontWeight: '600',
-  },
-  forgotPassword: {
-    alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-  forgotPasswordText: {
+  input: {
+    flex: 1,
+    padding: spacing.md,
     fontSize: fontSizes.base,
-    color: '#00e0ff',
+    color: '#FFF',
     fontFamily: 'Montserrat-Regular',
   },
-  footer: {
+  eyeButton: {
+    padding: spacing.md,
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: spacing.xl,
+  },
+  forgotPasswordText: {
+    fontSize: fontSizes.sm,
+    color: '#00E0FF',
+    fontFamily: 'Montserrat-Regular',
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: '#00E0FF',
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  buttonDisabled: {
+    backgroundColor: '#666',
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  loadingIcon: {
+    transform: [{ rotate: '0deg' }],
+  },
+  buttonText: {
+    fontSize: fontSizes.lg,
+    color: '#000',
+    fontFamily: 'Montserrat-Bold',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  dividerText: {
+    fontSize: fontSizes.sm,
+    color: '#888',
+    fontFamily: 'Montserrat-Regular',
+    paddingHorizontal: spacing.md,
+  },
+  signupContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  footerText: {
+  signupText: {
     fontSize: fontSizes.base,
-    color: '#ccc',
+    color: '#888',
     fontFamily: 'Montserrat-Regular',
   },
   signupLink: {
     fontSize: fontSizes.base,
-    color: '#00e0ff',
+    color: '#00E0FF',
     fontFamily: 'Montserrat-SemiBold',
   },
 });

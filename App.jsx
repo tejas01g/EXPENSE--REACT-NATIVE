@@ -3,11 +3,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/firebaseConfig';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// Import GestureHandlerRootView
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Welcome from './src/Welcome';
 import Login from './src/Authentication/Login';
 import Signup from './src/Authentication/Signup';
 import BottomTabs from './src/Navigation/BottomTabs';
+
+// Add this import at the very top for Android gesture support
+import 'react-native-gesture-handler';
+
+GoogleSignin.configure({
+  webClientId: "111740839007-6dcip2tbhqvatn5r5nseslm7om54vdur.apps.googleusercontent.com",
+});
 
 const Stack = createNativeStackNavigator();
 
@@ -27,19 +37,22 @@ const App = () => {
   if (loading) return null; // or splash screen
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!user ? (
-          <>
-            <Stack.Screen name="Welcome" component={Welcome} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Signup" component={Signup} />
-          </>
-        ) : (
-          <Stack.Screen name="Main" component={BottomTabs} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    // Wrap everything with GestureHandlerRootView
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {!user ? (
+            <>
+              <Stack.Screen name="Welcome" component={Welcome} />
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Signup" component={Signup} />
+            </>
+          ) : (
+            <Stack.Screen name="Main" component={BottomTabs} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 
